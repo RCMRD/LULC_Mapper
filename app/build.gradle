@@ -1,0 +1,57 @@
+apply plugin: 'com.android.application'
+
+android {
+    signingConfigs {
+        LULC_RELEASE {
+            keyAlias 'LULC'
+            keyPassword '53#falls'
+            storeFile file('C:/tieneAS/Funguo/igotthaAPP_._._rcmrd.jks')
+            storePassword '53#falls'
+        }
+        LULC_DEBUG {
+            keyAlias 'LULC'
+            keyPassword '53#falls'
+            storeFile file('C:/tieneAS/Funguo/igotthaAPP_._._rcmrd.jks')
+            storePassword '53#falls'
+        }
+    }
+    compileSdkVersion 25
+    buildToolsVersion '25.0.2'
+    defaultConfig {
+        applicationId "com.servir.lulcmapper"
+        minSdkVersion 16
+        targetSdkVersion 25
+        versionCode 1
+        versionName "LULC_1_2017"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        signingConfig signingConfigs.LULC_RELEASE
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.LULC_RELEASE
+        }
+        debug {
+            signingConfig signingConfigs.LULC_DEBUG
+            debuggable true
+        }
+    }
+    useLibrary 'org.apache.http.legacy'
+    productFlavors {
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support.constraint:constraint-layout:1.0.0-beta1'
+    testCompile 'junit:junit:4.12'
+    compile 'com.google.android.gms:play-services-maps:10.2.6'
+    compile 'com.google.android.gms:play-services-location:10.2.6'
+    compile 'org.apache.httpcomponents:httpcomponents-client:4.5.3'
+    compile 'org.apache.httpcomponents:httpcomponents-core:4.4.6'
+}

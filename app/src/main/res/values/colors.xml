@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+    <color name="colorPrimary">#3A4B52</color>
+    <color name="colorPrimaryDark">#273238</color>
+    <color name="colorAccent">#ddA2C64A</color>
+
+
+    <!--<color name="colorThm">#cc8C6954</color>-->
+    <color name="colorMainTitle">#273238</color>
+    <color name="colorMainTxtswitch">#261926</color>
+    <color name="genLabels">#2A353B</color>
+    <color name="colorComlinee">#cc3A4B52</color>
+    <color name="colorComlineeMain">#cc9BC531</color>
+    <color name="colorslide">#cc3A4B52</color>
+    <color name="colorHighlight">#dd000000</color>
+    <color name="colorHtransparent">#2246650e</color>
+    <color name="statocom">#3A4B52</color>
+    <color name="dialogcom">#273238</color>
+    <color name="dialogcombtn">#3A4B52</color>
+    <color name="dialogcomtxt">#FFFFFF</color>
+
+
+</resources>

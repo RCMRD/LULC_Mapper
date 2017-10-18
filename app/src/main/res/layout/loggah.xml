@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/dodok2"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical"
+    >
+
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_height="match_parent"
+        >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_margin="10dp"
+        android:layout_centerInParent="true">
+
+        <ImageView
+            android:id="@+id/imgga"
+            android:layout_centerHorizontal="true"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:src="@drawable/splaa"
+            />
+
+        <TextView
+            android:id="@+id/ttl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/colorMainTitle"
+            android:text="User Login"
+            android:layout_below="@+id/imgga"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textStyle="bold" />
+
+
+    <RelativeLayout
+        android:layout_below="@+id/ttl"
+        android:layout_width="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true">
+
+            <TextView
+                android:id="@+id/textView1a"
+                android:layout_width="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_height="wrap_content"
+                android:textColor="@color/genLabels"
+                android:layout_alignParentLeft="true"
+                android:text="E-mail Address" />
+
+            <EditText
+                android:id="@+id/logemail"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/emailad"
+                android:layout_alignLeft="@+id/textView1a"
+                android:layout_marginTop="10dp"
+                android:layout_below="@+id/textView1a"
+                android:inputType="textEmailAddress"
+                android:ems="10" >
+                <requestFocus />
+            </EditText>
+
+
+
+    <TextView
+        android:id="@+id/textView2a"
+        android:layout_width="wrap_content"
+        android:layout_below="@+id/logemail"
+        android:layout_marginTop="10dp"
+        android:layout_height="wrap_content"
+        android:textColor="@color/genLabels"
+        android:layout_alignParentLeft="true"
+        android:text="Password" />
+
+    <EditText
+        android:id="@+id/logpass"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:hint="Password"
+        android:layout_alignLeft="@+id/textView2a"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_below="@+id/textView2a"
+        android:inputType="textPassword"
+        android:ems="10" >
+
+    </EditText>
+
+
+    <Button
+        android:id="@+id/logingia"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:textStyle="bold"
+        android:layout_margin="20dp"
+        android:layout_below="@+id/logpass"
+        android:textAllCaps="false"
+        android:background="@drawable/comlineemain"
+        android:text="Sign in"
+        android:textColor="@android:color/background_light" />
+
+
+    <TextView
+        android:id="@+id/logreg"
+        android:layout_width="wrap_content"
+        android:layout_below="@+id/logingia"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:textSize="18sp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:textColor="#000000"
+        android:onClick="onClick_su"
+        android:clickable="true"
+        android:text="Register" />
+
+    <TextView
+        android:id="@+id/logforgot"
+        android:layout_width="wrap_content"
+        android:layout_below="@+id/logreg"
+        android:layout_marginTop="20dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:onClick="onClick_fd"
+        android:visibility="gone"
+        android:clickable="true"
+        android:textColor="#000000"
+        android:text="Forgot log in details?" />
+
+        </RelativeLayout>
+
+        </RelativeLayout>
+    </ScrollView>
+
+
+
+
+
+
+</RelativeLayout>
+
+
+
