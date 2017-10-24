@@ -34,6 +34,7 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -48,24 +49,23 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 
-public class Loginno extends AppCompatActivity {
+public class Loginno extends AppCompatActivity implements AsyncTaskCompleteListener {
 
     EditText logemailA, logpassA;
     TextView logsignupA, logforgotA;
     Button logsigninA;
     View View;
     String mail="";
-    locTrak2 locii =  new locTrak2(Loginno.this);;
+    locTrak2 locii =  new locTrak2(Loginno.this);
     String pass="";
-    private SQLiteDatabase spatiadb;
-    String huyu = "user";
+    DatabaseHandler db = DatabaseHandler.getInstance(this);
     String statt = "";
     String pswd = "";
     String myil = "";
+    String nisa = "";
+    String refo = "";
     String sax = "0.0";
     String say = "0.0";
-
-    public static final String URL1 = "http://mobiledata.rcmrd.org/lulc/checka.php";
 
 
     List<String> smalla2 = new ArrayList<String>();
@@ -97,15 +97,19 @@ public class Loginno extends AppCompatActivity {
         logsignupA = (TextView) findViewById(R.id.logreg);
         logforgotA = (TextView) findViewById(R.id.logforgot);
 
-        spatiadb=openOrCreateDatabase("LULCDB", Context.MODE_PRIVATE, null);
-        spatiadb.execSQL("CREATE TABLE IF NOT EXISTS userTBL(userno VARCHAR,usernem VARCHAR,usertel VARCHAR,usercntry VARCHAR,useremail VARCHAR,userpass VARCHAR);");
+        //this.deleteDatabase(db.getDatabaseName());
+        //db.resetAllTables();
 
-        Cursor c=spatiadb.rawQuery("SELECT * FROM userTBL WHERE userno='"+huyu+"'", null);
-        if(c.moveToFirst())
-        {
-            mail = c.getString(4);
-            pass = c.getString(5);
-        }else{
+        if (db.CheckIsDataAlreadyInDBorNot(Constantori.TABLE_REGISTER, Constantori.KEY_USERACTIVE, Constantori.USERACTIVE)) {
+
+            List<HashMap<String, String>> regData = db.GetAllData(Constantori.TABLE_REGISTER,"","");
+            HashMap<String, String> UserDetails = regData.get(0);
+
+            mail = UserDetails.get(Constantori.KEY_USEREMAIL);
+            pass = UserDetails.get(Constantori.KEY_USERPASS);
+            nisa = UserDetails.get(Constantori.KEY_USERORG);
+            refo = UserDetails.get(Constantori.KEY_USERREF);
+        } else {
             statt = "unreg";
         }
 
@@ -247,7 +251,7 @@ public class Loginno extends AppCompatActivity {
 
 
 
-    private class HttpAsyncTask2 extends AsyncTask<String, Void, String> {
+   /* private class HttpAsyncTask2 extends AsyncTask<String, Void, String> {
 
 
         @Override
@@ -367,7 +371,7 @@ public class Loginno extends AppCompatActivity {
 
         }
 
-    }
+    }*/
 
 
     public void diambaidnet(View v) {
@@ -389,7 +393,17 @@ public class Loginno extends AppCompatActivity {
             public void onClick(View v){
 
                 ingia.dismiss();
-                new HttpAsyncTask2().execute(new String[]{URL1});
+
+
+                Map<String,String> map = new HashMap<String, String>();
+                map.put("pswd", pswd);
+                map.put("mail", myil);
+
+
+                new NetPost(Loginno.this,"login_CheckJSON",Constantori.getJSON(map),"Authenticating. Make sure internet connection is active", Constantori.TABLE_REGISTER, Constantori.KEY_USERACTIVE).execute(new String[]{Constantori.URL_LOGIN});
+
+
+
 
             }
         });
@@ -555,4 +569,50 @@ public class Loginno extends AppCompatActivity {
         startActivity(intent);
 
     }
+
+    @Override
+    public void AsyncTaskCompleteListener(String result, String sender, String TableName, String FieldName)
+    {
+        switch (sender){
+            case "login_CheckJSON":
+
+                if (result.equals("not_approved")) {
+                    Toast.makeText(Loginno.this, "You have not been approved yet by the administrator.", Toast.LENGTH_LONG).show();
+                    logemailA.setText("");
+                    logpassA.setText("");
+
+                }else if(result.equals(null)) {
+                    Toast.makeText(Loginno.this, "Server updating, please wait and try again", Toast.LENGTH_LONG).show();
+
+                }else if(result.equals("not_registered")) {
+                    Toast.makeText(Loginno.this, "Incorrect login detail. Please try again.", Toast.LENGTH_LONG).show();
+
+                }else if(result.equals("Issue")) {
+                    Constantori.diambaidno(View);
+
+                }else{
+
+                    try {
+                        JSONArray storesArray = new JSONArray(result);
+                        storesArray.getJSONObject(0).put(Constantori.KEY_USERPASS, pswd);
+
+                        db.UserApproved(storesArray);
+                    }catch (Exception xx){
+                        Log.e(Constantori.APP_ERROR_PREFIX + "_LoginnoJSON", xx.getMessage());
+                        xx.printStackTrace();
+                    }
+
+                }
+
+                break;
+
+            default:
+
+                break;
+
+        }
+
+    }
+
+
 }
