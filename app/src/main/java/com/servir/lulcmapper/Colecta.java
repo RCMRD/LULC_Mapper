@@ -61,7 +61,7 @@ public class Colecta extends ActionBarActivity {
 	String syes = "Accessible";
 	String sno = "Inaccessible";
 	View View;
-	SQLiteDatabase spatiadb;
+	DatabaseHandler db = DatabaseHandler.getInstance(this);
 	ArrayAdapter<String> spinnerArrayAdapter;
 	//Spinner	s6,s3, s31, s312, s313, s2x, s4x;
 	//EditText s2, s4, s7, s8, s87;
@@ -69,7 +69,7 @@ public class Colecta extends ActionBarActivity {
 	TextView s1;
 	//RadioButton neww, prevv;
 	String picnm;
-	String lepic;
+	String refo;
 	String naniask = "";
     String lepicnm;
     File f;
@@ -107,28 +107,14 @@ public class Colecta extends ActionBarActivity {
         
         s1= (TextView) findViewById (R.id.s1);
         /*s6= (Spinner) findViewById (R.id.s6);
-        s3= (Spinner) findViewById (R.id.s3);
-        s31= (Spinner) findViewById (R.id.s31);
-        s312= (Spinner) findViewById (R.id.s312);
-        s313= (Spinner) findViewById (R.id.s313);
-        s2x= (Spinner) findViewById (R.id.s2x);
-        s4x= (Spinner) findViewById (R.id.s4x);
-      
-        s2= (EditText) findViewById (R.id.s2);
-        s4= (EditText) findViewById (R.id.s4);*/
+        */
         s7= (EditText) findViewById (R.id.s7);
-        //s8= (EditText) findViewById (R.id.s8);
 		s87= (EditText) findViewById (R.id.s87);
         
        /* neww = (RadioButton) findViewById(R.id.neww);
 		prevv = (RadioButton) findViewById(R.id.prevv);*/
 		btnfoto = (Button) findViewById(R.id.bfopic);
-		/*neww2 = (RadioButton) findViewById(R.id.neww2);
-		prevv2 = (RadioButton) findViewById(R.id.prevv2);
-		neww3 = (RadioButton) findViewById(R.id.neww3);
-		prevv3 = (RadioButton) findViewById(R.id.prevv3);
-		neww4 = (RadioButton) findViewById(R.id.neww4);
-		prevv4 = (RadioButton) findViewById(R.id.prevv4);*/
+
 		
     
          Intent intentqa = getIntent();
@@ -141,47 +127,10 @@ public class Colecta extends ActionBarActivity {
 		 datno = intentqdsa.getStringExtra("datno");
 		    rdatno = datno.replace(":","_");
 		    rdatno = rdatno.replace("-","_");
-       
-       
-       spatiadb=openOrCreateDatabase("LULCDB", Context.MODE_PRIVATE, null);
-		//spatiadb.execSQL("CREATE TABLE IF NOT EXISTS datTBL(datno VARCHAR,datftrname VARCHAR,datcnt VARCHAR,datiar VARCHAR,datgar VARCHAR,datcc VARCHAR,dathab VARCHAR,databd VARCHAR,datown VARCHAR,datara VARCHAR,datcom VARCHAR,datx VARCHAR,daty VARCHAR,datpicnm VARCHAR);");
-		spatiadb.execSQL("CREATE TABLE IF NOT EXISTS datTBL(datno VARCHAR,datftrname VARCHAR,datcom VARCHAR,datx VARCHAR,daty VARCHAR,datpicnm VARCHAR);");
-		spatiadb.execSQL("CREATE TABLE IF NOT EXISTS picTBL(userpic VARCHAR, userpicpath VARCHAR, sendstat VARCHAR);");
 
 
-		/*s1.setOnItemSelectedListener(new OnItemSelectedListener() {
-
-
-			public void onItemSelected(AdapterView<?> arg0,
-									   android.view.View arg1, int arg2, long arg3) {
-				// TODO Auto-generated method stub
-				String mm = s1.getSelectedItem().toString();
-
-				if (mm.equals("Other")){
-					s87.setEnabled(true);
-				}else{
-					s87.setText("");
-					s87.setEnabled(false);
-				}
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> arg0) {
-				// TODO Auto-generated method stub
-
-			}
-
-		});*/
-
-		s1.setText(s001);
-		if (!s001.equals("Other")){
-			s87.setText("");
-			s87.setEnabled(false);
-		}else{
-			s87.setEnabled(true);
-		}
-
-
+		doDBStuff("getRefo");
+		doDBStuff("Entered");
 
 
 		/*s31.setOnItemSelectedListener(new OnItemSelectedListener() {
@@ -228,9 +177,8 @@ public class Colecta extends ActionBarActivity {
 							) {
 
 						PigaPicha();
-						//Toast.makeText(Loginno.this, "111aaaaaaa ", Toast.LENGTH_LONG).show();
+
 					} else {
-						//Toast.makeText(Loginno.this, "222aaaaaaa ", Toast.LENGTH_LONG).show();
 
 						reqPermission("anaingia");
 
@@ -270,42 +218,21 @@ public class Colecta extends ActionBarActivity {
 						s001 = s87.getText().toString().trim();
 					}
 
-/*
-		    	  //s006 = s6.getSelectedItem().toString().trim();
-		    	  s006  = "";
-		    	  s003 = s3.getSelectedItem().toString().trim();
-		    	  s031 = s31.getSelectedItem().toString().trim();
-		    	  s0312 = s312.getSelectedItem().toString().trim();
-		    	  s0313 = s313.getSelectedItem().toString().trim();
-		    	  
-		    	  s02x = s2x.getSelectedItem().toString().trim();
-		    	  s04x = s4x.getSelectedItem().toString().trim();
-       		 */
-       		      
              		if(s7.getText().toString().trim().length() == 0){
-       		    	s007 = "None";
-       		      }else{
-       		    	s007 = s7.getText().toString().trim();  
-       		      }
+       		    		s007 = "None";
+					  }else{
+						s007 = s7.getText().toString().trim();
+					}
 
 
-             	 /* s002 = s2.getText().toString().trim();
-       		      s004 = s4.getText().toString().trim();*/
-       		      s007 = s7.getText().toString().trim();
-       		      //s008 = s8.getText().toString().trim();
 
+       		      	s007 = s7.getText().toString().trim();
 					s001 = s001.replace("'", "''");
-       		    /*  s002 = s002.replace("'", "''");
-       		      s004 = s004.replace("'", "''");*/
-       		      s007 = s007.replace("'", "''");
-       		     /* s008 = s008.replace("'", "''");
+       		     	 s007 = s007.replace("'", "''");
 
-       		      
-       		      s002 = s002.replace(",", "~");
-    		      s004 = s004.replace(",", "~");*/
-    		      s001 = s001.replace(",", "~");
-    		      s007 = s007.replace(",", "~");
-    		      /*s008 = s008.replace(",", "~");*/
+    		      	s001 = s001.replace(",", "~");
+    		      	s007 = s007.replace(",", "~");
+
        		      
        		    /*  if (s031.equals("Other")){
        		    	  s031 = s008;
@@ -317,30 +244,13 @@ public class Colecta extends ActionBarActivity {
        		    	  s005 = syes;
        		      }*/
        		      
-       		      /*
-       		   if (neww2.isChecked()){
-    		    	  s009 = sno;
-    		      }else if (prevv2.isChecked()){
-    		    	  s009 = syes;
-    		      }
-       		   
-       		 if (neww3.isChecked()){
-  		    	  s010 = sno;
-  		      }else if (prevv3.isChecked()){
-  		    	  s010 = syes;
-  		      }
-       		 
-       		 if (neww4.isChecked()){
-  		    	  s011 = sno;
-  		      }else if (prevv4.isChecked()){
-  		    	  s011 = syes;
-  		      }*/
+
 
 
        		if(s1.getText().toString().trim().equals("Other") &&
 				s87.getText().toString().equals("")) {
 
-				Toast.makeText(Colecta.this, "Please specify species", Toast.LENGTH_LONG).show();
+				Toast.makeText(Colecta.this, "Please specify land cover class", Toast.LENGTH_LONG).show();
 
 			}else{
        			
@@ -351,35 +261,34 @@ public class Colecta extends ActionBarActivity {
        				/*s002 = s002 + " " + s02x;
        				s004 = s004 + " " + s04x;*/
 
-       				
-       			
-       			    Cursor chk=spatiadb.rawQuery("SELECT * FROM datTBL WHERE datno='"+datno+"'", null);
-		  	 		if(chk.moveToFirst())
+				Map<String,String> submap = new HashMap<String, String>();
 
-		  	 		{	
-		      		  spatiadb.execSQL("UPDATE datTBL SET datftrname='"+s001+"',datcom='"+s007+"',datx='"+sax+"',daty='"+say+"',datpicnm='"+picnm+"' WHERE datno='"+datno+"'");
-		  	 	    }
-		  	 		else
-		  	 		{
-		  	 	     spatiadb.execSQL("INSERT INTO datTBL VALUES('"+datno+"','"+s001+"','"+s007+"','"+sax+"','"+say+"','"+picnm+"');");
-		  	 		}
-					chk.close();
-					
-					String bado = "pending";
+				submap.put(Constantori.KEY_DATNO, datno);
+				submap.put(Constantori.KEY_DATFEATURE,s001);
+				submap.put(Constantori.KEY_DATCOMMENT,s007);
+				submap.put(Constantori.KEY_DATLON,sax);
+				submap.put(Constantori.KEY_DATLAT,say);
+				submap.put(Constantori.KEY_DATPICNAME,picnm);
+				submap.put(Constantori.KEY_DATSTATUS,Constantori.SAVE_DATSTATUS);
+				submap.put(Constantori.KEY_USERREF, refo);
 
-                Cursor chk2=spatiadb.rawQuery("SELECT * FROM picTBL WHERE userpic='"+picnm+"'", null);
-                if(chk2.moveToFirst())
-                {
-                    spatiadb.execSQL("UPDATE picTBL SET userpic='"+picnm+"',userpicpath='"+lepicpath+"',sendstat='"+bado+"' WHERE userpic='"+picnm+"'");
-                }
-                else
-                {
-                    spatiadb.execSQL("INSERT INTO picTBL VALUES('"+picnm+"','"+lepicpath+"','"+bado+"');");
-                }
-				chk2.close();
-             		
-		  	 		
-             	    diambaids(View);
+				if (db.CheckIsDataAlreadyInDBorNot(Constantori.TABLE_DAT, Constantori.KEY_DATNO, datno)){
+					db.KolekData_UpdateAll(Constantori.getJSON(submap));
+				}else{
+					db.KolekData_InsertAll(Constantori.getJSON(submap));
+				}
+
+				Map<String,String> submap2 = new HashMap<String, String>();
+
+
+				submap2.put(Constantori.KEY_USERPIC,picnm);
+				submap2.put(Constantori.KEY_USERPICPATH,lepicpath);
+				submap2.put(Constantori.KEY_SENDSTAT,Constantori.SAVE_PICSTATUS);
+
+				db.PicData_InsertAll(Constantori.getJSON(submap2));
+
+				diambaids(View);
+
        		}
              		
              	}
@@ -410,16 +319,9 @@ public class Colecta extends ActionBarActivity {
 			@Override
 			public void onClick(View v){
 				
-				/*s2.setText("");
-				s4.setText("");*/
+
 				s7.setText("");
-				/*s8.setText("");
-				//s1.setSelection(0);
-				s3.setSelection(0);
-				s6.setSelection(0);
-				s31.setSelection(0);
-				s312.setSelection(0);
-				s313.setSelection(0);
+				/*s1.setSelection(0);
 				neww.setChecked(true);*/
 				
 				Intent intent = new Intent (Colecta.this, MainActivity.class);
@@ -702,6 +604,73 @@ public class Colecta extends ActionBarActivity {
 				Toast.makeText(Colecta.this, "Please enable permissions for camera", Toast.LENGTH_LONG).show();
 			}
 		}
+	}
+
+	private void doDBStuff(String where){
+
+		switch (where){
+
+			case "getRefo":
+
+				if (db.CheckIsDataAlreadyInDBorNot(Constantori.TABLE_REGISTER, Constantori.KEY_USERACTIVE, Constantori.USERACTIVE)) {
+
+					List<HashMap<String, String>> regData = db.GetAllData(Constantori.TABLE_REGISTER, "", "");
+
+					HashMap<String, String> UserDetails = regData.get(0);
+
+
+					refo = UserDetails.get(Constantori.KEY_USERREF);
+
+
+				}
+
+				break;
+
+			case "Entered":
+
+				if (db.CheckIsDataAlreadyInDBorNot(Constantori.TABLE_DAT, Constantori.KEY_DATNO, datno) && db.CheckIsDataAlreadyInDBorNot(Constantori.TABLE_DAT, Constantori.KEY_USERREF, refo)) {
+
+					List<HashMap<String, String>> allData = db.GetAllData(Constantori.TABLE_DAT, Constantori.KEY_DATNO, datno);
+
+					HashMap<String, String> allDetails = allData.get(0);
+
+					s1.setText((allDetails.get(Constantori.KEY_DATFEATURE)));
+
+					/*
+
+					for (int i=0; i < in2.getAdapter().getCount(); i++ ){
+						if (NursDetails.get(db.KEY_NURSERYYR).trim().equals(in2.getAdapter().getItem(i).toString())){
+							in2.setSelection(i);
+							break;
+						}
+					}
+
+					in6.setText(NursDetails.get(db.KEY_NURSERYTEL));
+
+					*/
+
+
+				}else{
+
+					s1.setText(s001);
+
+					if (!s001.equals("Other")){
+						s87.setText("");
+						s87.setEnabled(false);
+					}else{
+						s87.setEnabled(true);
+					}
+
+				}
+
+				break;
+
+			default:
+				//System.out.println("Uuuuuwi");
+				break;
+
+		}
+
 	}
 
 }

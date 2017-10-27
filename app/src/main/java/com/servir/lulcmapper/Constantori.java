@@ -61,10 +61,20 @@ public class Constantori {
         //For user status
         public static final String USERACTIVE = "1";
         public static final String USERINACTIVE = "0";
+        public static final String USERREFNULL = "None";
+        public static final String USERUNREG = "unreg";
+        public static final String POST_RESPONSEKEY = "resp";
+        public static final String POST_RESPONSEVAL = "success";
+        public static final String POST_DATSTATUS = "1";
+        public static final String SAVE_DATSTATUS = "0";
+        public static final String SAVE_PICSTATUS = "pending";
 
     //////////////////////////////////////////////////////////////////////////////
 
     public static final String URL_LOGIN = "http://mobiledata.rcmrd.org/lulc/checka.php";
+    public static final String URL_REGISTER = "http://mobiledata.rcmrd.org/lulc/spatiareg.php";
+    public static final String URL_MAINPOST = "http://mobiledata.rcmrd.org/lulc/senda.php";
+    public static final String URL_PIC = "http://mobiledata.rcmrd.org/lulc/sendapic.php";
 
 
 
@@ -82,6 +92,8 @@ public class Constantori {
 
         return allData_multi;
     }
+
+
 
     public static void diambaidno(View v) {
         final Dialog mbott = new Dialog(ApplicationContextor.getAppContext(), android.R.style.Theme_Translucent_NoTitleBar);

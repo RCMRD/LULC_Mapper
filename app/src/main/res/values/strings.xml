@@ -25,6 +25,9 @@
     <string name="fono">Phone Number</string>
     <string name="fonoo">07********</string>
     <string name="emailad">E-mail Address</string>
+    <string name="orgaa">Organisation</string>
+    <string name="rolee">Position</string>
+    <string name="roleehelp">example: Field Officer</string>
     <string name="countrii">Country: </string>
     <string name="regista">Register</string>
 

@@ -100,7 +100,7 @@ public class Loginno extends AppCompatActivity implements AsyncTaskCompleteListe
         //this.deleteDatabase(db.getDatabaseName());
         //db.resetAllTables();
 
-        if (db.CheckIsDataAlreadyInDBorNot(Constantori.TABLE_REGISTER, Constantori.KEY_USERACTIVE, Constantori.USERACTIVE)) {
+        if (db.CheckIsDataAlreadyInDBorNot(Constantori.TABLE_REGISTER, Constantori.KEY_USERACTIVE, Constantori.USERACTIVE) && !db.CheckIsDataAlreadyInDBorNot(Constantori.TABLE_REGISTER, Constantori.KEY_USERREF, Constantori.USERREFNULL)) {
 
             List<HashMap<String, String>> regData = db.GetAllData(Constantori.TABLE_REGISTER,"","");
             HashMap<String, String> UserDetails = regData.get(0);
@@ -110,7 +110,7 @@ public class Loginno extends AppCompatActivity implements AsyncTaskCompleteListe
             nisa = UserDetails.get(Constantori.KEY_USERORG);
             refo = UserDetails.get(Constantori.KEY_USERREF);
         } else {
-            statt = "unreg";
+            statt = Constantori.USERUNREG;
         }
 
 
@@ -125,7 +125,6 @@ public class Loginno extends AppCompatActivity implements AsyncTaskCompleteListe
                     @Override
                     public void run() {
 
-                            //locii = new locTrak2(Loginno.this);
                             if (locii.canGetLocation()) {
                                 if (locii.getLatitude() != 0.0 && locii.getLongitude() != 0.0) {
 
@@ -152,9 +151,6 @@ public class Loginno extends AppCompatActivity implements AsyncTaskCompleteListe
 
             public void onClick(View view) {
 
-                //Toast.makeText(Loginno.this, "aaaaaaa ", Toast.LENGTH_LONG).show();
-
-
                 if (Build.VERSION.SDK_INT < 23) {
                     anaingia();
                 } else {
@@ -168,11 +164,9 @@ public class Loginno extends AppCompatActivity implements AsyncTaskCompleteListe
                             ) {
 
                         anaingia();
-                        //Toast.makeText(Loginno.this, "111aaaaaaa ", Toast.LENGTH_LONG).show();
-                    } else {
-                        //Toast.makeText(Loginno.this, "222aaaaaaa ", Toast.LENGTH_LONG).show();
 
-                        reqPermission("anaingia");
+                    } else {
+                     reqPermission("anaingia");
 
                     }
 
@@ -205,9 +199,8 @@ public class Loginno extends AppCompatActivity implements AsyncTaskCompleteListe
                     ) {
 
                 anareg();
-                //Toast.makeText(Loginno.this, "111aaaaaaa ", Toast.LENGTH_LONG).show();
+
             } else {
-                //Toast.makeText(Loginno.this, "222aaaaaaa ", Toast.LENGTH_LONG).show();
 
                 reqPermission("anareg");
 
@@ -225,153 +218,6 @@ public class Loginno extends AppCompatActivity implements AsyncTaskCompleteListe
     }
 
 
-
-
-
-    public void diambaidno(View v) {
-        final Dialog mbott = new Dialog(Loginno.this, android.R.style.Theme_Translucent_NoTitleBar);
-        mbott.setContentView(R.layout.mbaind_nonet3);
-        mbott.setCanceledOnTouchOutside(false);
-        mbott.setCancelable(false);
-        WindowManager.LayoutParams lp = mbott.getWindow().getAttributes();
-        lp.dimAmount=0.85f;
-        mbott.getWindow().setAttributes(lp);
-        mbott.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-        mbott.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-
-        Button mbaok = (Button) mbott.findViewById(R.id.mbabtn1);
-        mbaok.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                mbott.dismiss();
-            }
-        });
-        mbott.show();
-    }
-
-
-
-   /* private class HttpAsyncTask2 extends AsyncTask<String, Void, String> {
-
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mpd = new ProgressDialog(Loginno.this);
-            mpd.setMessage("Authenticating. Make sure internet connection is active");
-            mpd.setIndeterminate(true);
-            mpd.setCanceledOnTouchOutside(false);
-            mpd.setMax(100);
-            mpd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            mpd.show();
-        }
-
-
-
-        @Override
-        protected String doInBackground(String... urls) {
-
-            String output1=null;
-            for (String url:urls){
-                output1 = getOutputFromUrl(url);
-            }
-
-            return output1;
-        }
-
-        private String getOutputFromUrl(String url){
-            String output1=null;
-            StringBuilder sb1 = new StringBuilder();
-
-
-            try {
-
-                HttpClient httpclient1 = new DefaultHttpClient();
-                HttpPost httppost1 = new HttpPost(url);
-                List<NameValuePair> nameValuePairs1 = new ArrayList<NameValuePair>(2);
-                nameValuePairs1.add(new BasicNameValuePair("mail", myil));
-                nameValuePairs1.add(new BasicNameValuePair("pswd", pswd));
-
-                httppost1.setEntity(new UrlEncodedFormEntity(nameValuePairs1, "utf-8"));
-                HttpResponse httpr1 = httpclient1.execute(httppost1);
-
-                if (httpr1.getStatusLine().getStatusCode() != 200) {
-                    Log.d("this ndio hii", "Server encountered an error");
-                }
-
-
-                BufferedReader reader1 = new BufferedReader(new InputStreamReader(httpr1.getEntity().getContent(), "UTF8"));
-                sb1 = new StringBuilder();
-                sb1.append(reader1.readLine() + "\n");
-                String line1 = null;
-
-                while ((line1 = reader1.readLine()) != null) {
-                    sb1.append(line1 + "\n");
-                }
-
-                output1 = sb1.toString();
-
-            } catch (NullPointerException e) {
-                e.printStackTrace();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            return output1;
-
-        }
-
-        @SuppressWarnings("unused")
-        protected void onProgressUpdate(int...progress) {
-            mpd.setProgress(progress[0]);
-
-        }
-
-
-
-        @Override
-        protected void onPostExecute(String output1) {
-
-            try {
-                mpd.dismiss();
-
-                String mekam2 = output1.toString().trim();
-                Log.e("Login_output", mekam2);
-
-                if (mekam2.length() >= 13){
-
-                    smalla2 = Arrays.asList(mekam2.split(","));
-
-                    Cursor chk=spatiadb.rawQuery("SELECT * FROM userTBL WHERE userno='"+huyu+"'", null);
-                    if(chk.moveToFirst())
-                    {
-                        spatiadb.execSQL("UPDATE userTBL SET usernem='"+smalla2.get(0)+"',usertel='"+smalla2.get(1)+"',usercntry='"+smalla2.get(2)+"',useremail='"+smalla2.get(3)+"', userpass='"+smalla2.get(4)+"' WHERE userno='"+huyu+"'");
-                    }
-                    else
-                    {
-                        spatiadb.execSQL("INSERT INTO userTBL VALUES('"+huyu+"','"+smalla2.get(0)+"','"+smalla2.get(1)+"','"+smalla2.get(2)+"','"+smalla2.get(3)+"','"+smalla2.get(4)+"');");
-                    }
-                    chk.close();
-
-                    Intent intent = new Intent(Loginno.this, MainActivity.class);
-                    startActivity(intent);
-
-                }else{
-                    Toast.makeText(Loginno.this, "You have either not registered or been approved yet. Contact the administrator.", Toast.LENGTH_LONG).show();
-
-                        logemailA.setText("");
-                        logpassA.setText("");
-                }
-
-            }catch(Exception x){
-                //Log.e("FM_login_error_auth",x.toString());
-                diambaidno(View);
-            }
-
-
-        }
-
-    }*/
 
 
     public void diambaidnet(View v) {
@@ -597,6 +443,11 @@ public class Loginno extends AppCompatActivity implements AsyncTaskCompleteListe
                         storesArray.getJSONObject(0).put(Constantori.KEY_USERPASS, pswd);
 
                         db.UserApproved(storesArray);
+
+                        Intent intent = new Intent(Loginno.this, MainActivity.class);
+                        startActivity(intent);
+
+
                     }catch (Exception xx){
                         Log.e(Constantori.APP_ERROR_PREFIX + "_LoginnoJSON", xx.getMessage());
                         xx.printStackTrace();

@@ -2,28 +2,21 @@ package com.servir.lulcmapper;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -37,24 +30,19 @@ import com.google.android.gms.location.LocationServices;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.util.Log;
@@ -67,7 +55,6 @@ import android.view.View.OnClickListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextSwitcher;
@@ -75,7 +62,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher.ViewFactory;
 
-public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, AsyncTaskCompleteListener {
 
     TextSwitcher textSwitcher;
     Animation slide_in_left, slide_out_right;
@@ -83,11 +70,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     View View;
     static double longitude = 0.0;
     static double latitude = 0.0;
-    private SQLiteDatabase spatiadb;
+    DatabaseHandler db = DatabaseHandler.getInstance(this);
     LinearLayout btnview, btnniko;
     public static final int confail = 9000;
-    public static final String URL_tuma = "http://mobiledata.rcmrd.org/lulc/senda.php";
-    public static final String URL_tumapic = "http://mobiledata.rcmrd.org/lulc/sendapic.php";
+
     String zipfilo;
     LocationRequest mlr;
     GoogleApiClient mgac;
@@ -99,14 +85,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     ProgressDialog mpd;
     String say = "0.0";
     String sax = "0.0";
-    String dater,pswd,pswda,ioyote;
-    String nani="";
+    String dater,pswda,ioyote;
     String simu="";
+    String refo="";
     String mail="";
-    String depty="";
-    String huyu = "user";
-    String responder = "";
-    String fili = "";
     ImageView taftaa;
     private final static int REQUEST_CODE_RECOVER_PLAY_SERVICES = 200;
     private final static int REQUEST_LOCATION = 2;
@@ -148,17 +130,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         createlocreq();
 
 
-        // spatiadb.execSQL("DROP TABLE IF EXISTS pwdTBL");
-        //spatiadb.execSQL("DROP TABLE IF EXISTS datTBL");
-        //spatiadb.execSQL("DROP TABLE IF EXISTS picTBL");
-
-        spatiadb=openOrCreateDatabase("LULCDB", Context.MODE_PRIVATE, null);
-        //spatiadb.execSQL("CREATE TABLE IF NOT EXISTS datTBL(datno VARCHAR,datftrname VARCHAR,datcnt VARCHAR,datiar VARCHAR,datgar VARCHAR,datcc VARCHAR,dathab VARCHAR,databd VARCHAR,datown VARCHAR,datara VARCHAR,datcom VARCHAR,datx VARCHAR,daty VARCHAR,datpicnm VARCHAR);");
-        spatiadb.execSQL("CREATE TABLE IF NOT EXISTS datTBL(datno VARCHAR,datftrname VARCHAR,datcom VARCHAR,datx VARCHAR,daty VARCHAR,datpicnm VARCHAR);");
-        spatiadb.execSQL("CREATE TABLE IF NOT EXISTS picTBL(userpic VARCHAR, userpicpath VARCHAR, sendstat VARCHAR);");
-        spatiadb.execSQL("CREATE TABLE IF NOT EXISTS userTBL(userno VARCHAR,usernem VARCHAR,usertel VARCHAR,usercntry VARCHAR,useremail VARCHAR,userpass VARCHAR);");
-
-
 
 
         slide_in_left = AnimationUtils.loadAnimation(this, android.R.anim.slide_in_left);
@@ -166,15 +137,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         textSwitcher.setInAnimation(slide_in_left);
         textSwitcher.setOutAnimation(slide_out_right);
 
-        Cursor c=spatiadb.rawQuery("SELECT * FROM userTBL WHERE userno='"+huyu+"'", null);
-        if(c.moveToFirst())
-        {
-            nani = c.getString(1);
-            simu = c.getString(2);
-            mail = c.getString(4);
-            pswda = c.getString(5);
 
-        }else{
+
+        if (db.CheckIsDataAlreadyInDBorNot(Constantori.TABLE_REGISTER, Constantori.KEY_USERACTIVE, Constantori.USERACTIVE)) {
+
+            List<HashMap<String, String>> regData = db.GetAllData(Constantori.TABLE_REGISTER,"","");
+            HashMap<String, String> UserDetails = regData.get(0);
+
+            mail = UserDetails.get(Constantori.KEY_USEREMAIL);
+            simu = UserDetails.get(Constantori.KEY_USERTEL);
+            refo = UserDetails.get(Constantori.KEY_USERREF);
+        } else {
             diambaidweni(View);
         }
 
@@ -240,21 +213,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                         }
 
                         if (latitude!=0.0 && longitude!=0.0 ){
-                            //taftaa.setVisibility(View.GONE);
+
                             sitato.setText("Locator Status : Detected");
-                            //sitato.setTypeface(Typeface.DEFAULT_BOLD, Typeface.BOLD_ITALIC);
+
                         }else{
                             sitato.setText("Locator Status : Scanning");
-                            //sitato.setTypeface(Typeface.DEFAULT_BOLD, Typeface.BOLD_ITALIC);
 
-                            //taftaa.setVisibility(View.VISIBLE);
-
-
-                    	          		 /*sitato.startAnimation(out);
-                    	          		 sitato.setText("Scanning Location");
-                    	                 sitato.startAnimation(in);*/
-                            //createlocreq();
-                            //sitato2.setText("INACTIVE (location not detected)");
                         }
 
                         // Toast.makeText(MainActivity.this,"LAT:"+String.valueOf(latitude)+"\n"+"LON:"+String.valueOf(longitude),Toast.LENGTH_SHORT).show();
@@ -287,7 +251,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 }else{
 
                     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", java.util.Locale.getDefault());
-                    dater = "LULC_" + nani.replace(" ", "_") + "_" + simu + "_" + dateFormat.format(new Date());
+                    dater = "LULC_" + refo.replace(" ", "_") + "_" + simu + "_" + dateFormat.format(new Date());
 
                     Intent intent = new Intent (MainActivity.this, Selekta.class);
                     intent.putExtra("lattt", String.valueOf(latitude));
@@ -312,11 +276,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     a.putDouble("lattt", latitude);
                     b.putDouble("lonnn", longitude);
 
-                    intent.putExtras(a);
+                   /* intent.putExtras(a);
                     intent.putExtras(b);
                     intent.putExtra("simu", simu);
                     intent.putExtra("nani", nani);
-                    startActivity(intent);
+                    startActivity(intent);*/
 
                 }else{
 
@@ -333,64 +297,53 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
             public void onClick(View view){
 
-                if (nani.equals("") || simu.equals("") || mail.equals("")){
+                if (refo.equals(Constantori.USERREFNULL)){
                     diambaidweni(View);
                 }else{
-                    Cursor c5=spatiadb.rawQuery("SELECT * FROM datTBL", null);
-                    stora.clear();
-                    if(c5!=null && c5.getCount()>0)
-                    {
+
+                    int hexa = 0;
 
 
+                    if (db.getRowCount(Constantori.TABLE_DAT,Constantori.KEY_DATSTATUS,Constantori.SAVE_DATSTATUS) > 0) {
 
+                        JSONArray sendo = db.PostDataArray_Alldata(Constantori.TABLE_DAT, Constantori.KEY_DATSTATUS, Constantori.SAVE_DATSTATUS);
 
-
-                        if(c5.moveToFirst())
-                        {
-                            stora.add(c5.getString(0));
-                            stora.add(c5.getString(1));
-                            stora.add(c5.getString(2));
-                            stora.add(c5.getString(3));
-                            stora.add(c5.getString(4));
-                            stora.add(c5.getString(5));
-                        }
-
-                        while(c5.moveToNext())
-                        {
-                            stora.add(c5.getString(0));
-                            stora.add(c5.getString(1));
-                            stora.add(c5.getString(2));
-                            stora.add(c5.getString(3));
-                            stora.add(c5.getString(4));
-                            stora.add(c5.getString(5));
-                        }
-
-                        c5.close();
-
-                        ioyote = stora.toString().replace("[", "");
-                        ioyote = ioyote.replace("]", "");
-
-                        new HttpAsyncTasktuma().execute(new String[]{URL_tuma});
-
+                        new NetPost(MainActivity.this, "maindata_PostJSON", sendo, "Sending... Make sure internet connection is active", Constantori.TABLE_DAT, Constantori.KEY_DATSTATUS).execute(new String[]{Constantori.URL_MAINPOST});
                     }else{
-                        Toast.makeText(getBaseContext(), "No data in internal database", Toast.LENGTH_LONG).show();
+                        hexa++;
                     }
 
 
-                    Cursor c5q=spatiadb.rawQuery("SELECT * FROM picTBL", null);
-                    stora.clear();
-                    if(c5q!=null && c5q.getCount()>0) {
+                    if(db.getRowCount(Constantori.TABLE_PIC, "","") > 0){
 
                         SimpleDateFormat dateFormat = new SimpleDateFormat("HHmmss", java.util.Locale.getDefault());
                         zipfilo = "LC_"  +  simu + "_" + dateFormat.format(new Date()) + ".zip";
-
-
                         lapica();
-                        new HttpAsyncTasktumapcha().execute(new String[]{URL_tumapic});
 
+                        try {
+
+                            JSONArray picArray = new JSONArray();
+                            JSONObject allImages = new JSONObject();
+
+                            allImages.put("zipfile", lefile);
+                            allImages.put("zipname", zipfilo);
+
+                            picArray.put(allImages);
+
+                            new NetPost(MainActivity.this, "maindata_PostImages", picArray, "Sending Images... Make sure internet connection is active",Constantori.TABLE_PIC,null).execute(new String[]{Constantori.URL_PIC});
+
+                        }catch (Exception xx){
+
+
+                        }
 
                     }else{
-                        Toast.makeText(getBaseContext(), "No pending images in internal database", Toast.LENGTH_LONG).show();
+
+                        hexa++;
+                    }
+
+                    if (hexa == 0){
+                        Toast.makeText(getBaseContext(), "No pending data in internal database", Toast.LENGTH_LONG).show();
                     }
 
 
@@ -552,213 +505,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
 
 
-    /*public void diaingia(View v) {
-        final Dialog ingia = new Dialog(this, android.R.style.Theme_Translucent_NoTitleBar);
-        ingia.setContentView(R.layout.selchat);
-        ingia.setCanceledOnTouchOutside(false);
-        ingia.setCancelable(false);
-        WindowManager.LayoutParams lp = ingia.getWindow().getAttributes();
-        lp.dimAmount=0.85f;
-        ingia.getWindow().setAttributes(lp);
-        updateUI();
-        ingia.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-        ingia.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-        ingia.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-        Button regok = (Button) ingia.findViewById(R.id.sawa);
-        Button regno = (Button) ingia.findViewById(R.id.rback);
-        final EditText upwd = (EditText) ingia.findViewById(R.id.upwd);
-
-        regok.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-
-
-
-                if (nani.equals("") || simu.equals("")){
-
-                    diambaidweni(View);
-
-                }else if (upwd.getText().toString().equals("") ){
-
-                    Toast.makeText(MainActivity.this,"Please fill in the login detail",Toast.LENGTH_LONG).show();
-
-                }else {
-
-                    //Toast.makeText(MainActivity.this,sax + " ----- " + say,Toast.LENGTH_LONG).show();
-
-                    if (sax.equals("0.0") || say.equals("0.0")){
-                        updateUI();
-                        Toast.makeText(MainActivity.this,"Please turn on GPS then try again",Toast.LENGTH_LONG).show();
-                    }else{
-                        pswd = upwd.getText().toString().trim();
-                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", java.util.Locale.getDefault());
-                        dater = "IS_" + nani + "_" + simu + "_" + dateFormat.format(new Date());
-
-
-
-
-                            if (pswda.equals(pswd)){
-
-                                Intent intent = new Intent (MainActivity.this, Selekta.class);
-                                intent.putExtra("lattt", String.valueOf(latitude));
-                                intent.putExtra("lonnn", String.valueOf(longitude));
-                                intent.putExtra("datno", dater);
-                                startActivity(intent);
-
-                            }else{
-                                Toast.makeText(MainActivity.this,"Please fill in the correct password",Toast.LENGTH_LONG).show();
-                            }
-
-
-
-                    }
-                }
-
-            }
-        });
-        regno.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                ingia.dismiss();
-            }
-        });
-        ingia.show();
-    }
-*/
-
-
-
-    /*private class HttpAsyncTask2 extends AsyncTask<String, Void, String> {
-
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mpd = new ProgressDialog(MainActivity.this);
-            mpd.setMessage("Authenticating. Make sure internet connection is active");
-            mpd.setIndeterminate(true);
-            mpd.setCanceledOnTouchOutside(false);
-            mpd.setMax(100);
-            mpd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            mpd.show();
-        }
-
-
-
-        @Override
-        protected String doInBackground(String... urls) {
-
-            String output1=null;
-            for (String url:urls){
-                output1 = getOutputFromUrl(url);
-            }
-
-            return output1;
-        }
-
-        private String getOutputFromUrl(String url){
-            String output1=null;
-            StringBuilder sb1 = new StringBuilder();
-
-
-            try {
-
-                HttpClient httpclient1 = new DefaultHttpClient();
-                HttpPost httppost1 = new HttpPost(url);
-                List<NameValuePair> nameValuePairs1 = new ArrayList<NameValuePair>(6);
-                nameValuePairs1.add(new BasicNameValuePair("uname", nani));
-                nameValuePairs1.add(new BasicNameValuePair("usimu", simu));
-                nameValuePairs1.add(new BasicNameValuePair("mail", mail));
-                nameValuePairs1.add(new BasicNameValuePair("pswd", pswd));
-                nameValuePairs1.add(new BasicNameValuePair("usx", sax));
-                nameValuePairs1.add(new BasicNameValuePair("usy", say));
-
-                httppost1.setEntity(new UrlEncodedFormEntity(nameValuePairs1, "utf-8"));
-                HttpResponse httpr1 = httpclient1.execute(httppost1);
-
-                if (httpr1.getStatusLine().getStatusCode() != 200) {
-                    Log.d("this ndio hii", "Server encountered an error");
-                }
-
-     	       *//*HttpEntity he = httpr.getEntity();
-     	       output = EntityUtils.toString(he);*//*
-
-                BufferedReader reader1 = new BufferedReader(new InputStreamReader(httpr1.getEntity().getContent(), "UTF8"));
-                sb1 = new StringBuilder();
-                sb1.append(reader1.readLine() + "\n");
-                String line1 = null;
-
-                while ((line1 = reader1.readLine()) != null) {
-                    sb1.append(line1 + "\n");
-                }
-
-                output1 = sb1.toString();
-
-            } catch (NullPointerException e) {
-                e.printStackTrace();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            return output1;
-
-        }
-
-        @SuppressWarnings("unused")
-        protected void onProgressUpdate(int...progress) {
-            mpd.setProgress(progress[0]);
-
-        }
-
-
-
-        @Override
-        protected void onPostExecute(String output1) {
-
-            try {
-                mpd.dismiss();
-
-                String vitingapi = output1.toString().trim();
-
-                if (vitingapi.equals("pass")){
-
-                    Cursor chk=spatiadb.rawQuery("SELECT * FROM pwdTBL WHERE userno='"+huyu+"'", null);
-                    if(chk.moveToFirst())
-                    {
-                        spatiadb.execSQL("UPDATE pwdTBL SET usernem='"+nani+"',usertel='"+simu+"',pswd='"+pswd+"' WHERE userno='"+huyu+"'");
-                    }
-                    else
-                    {
-                        spatiadb.execSQL("INSERT INTO pwdTBL VALUES('"+huyu+"','"+nani+"','"+simu+"','"+pswd+"');");
-                    }
-					chk.close();
-
-
-                    Intent intent = new Intent (MainActivity.this, Colecta.class);
-                    intent.putExtra("lattt", String.valueOf(latitude));
-                    intent.putExtra("lonnn", String.valueOf(longitude));
-                    intent.putExtra("datno", dater);
-                    startActivity(intent);
-
-
-                }else if(vitingapi.equals("imereach")){
-                    Toast.makeText(MainActivity.this,"Please fill in the correct password",Toast.LENGTH_LONG).show();
-                }else{
-                    diambaidno(View);
-                }
-
-            }catch(Exception x){
-                Log.e("tf",x.toString());
-                diambaidno(View);
-            }
-
-
-        }
-
-    }*/
-
-
-
     public void diambaidweni(View v) {
         final Dialog mbott = new Dialog(MainActivity.this, android.R.style.Theme_Translucent_NoTitleBar);
         mbott.setContentView(R.layout.mbaind_nowe);
@@ -850,109 +596,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
 
 
-    private class HttpAsyncTasktuma extends AsyncTask<String, Void, String> {
-
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mpd = new ProgressDialog(MainActivity.this);
-            mpd.setMessage("Sending... Make sure internet connection is active");
-            mpd.setIndeterminate(true);
-            mpd.setCanceledOnTouchOutside(false);
-            mpd.setMax(100);
-            mpd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            mpd.show();
-        }
-
-
-
-        @Override
-        protected String doInBackground(String... urls) {
-
-            String output1=null;
-            for (String url:urls){
-                output1 = getOutputFromUrl(url);
-            }
-
-            return output1;
-        }
-
-        private String getOutputFromUrl(String url){
-            String output1=null;
-            StringBuilder sb1 = new StringBuilder();
-
-
-            try {
-
-                HttpClient httpclient1 = new DefaultHttpClient();
-                HttpPost httppost1 = new HttpPost(url);
-                List<NameValuePair> nameValuePairs1 = new ArrayList<NameValuePair>(1);
-                nameValuePairs1.add(new BasicNameValuePair("ioyote", ioyote));
-                httppost1.setEntity(new UrlEncodedFormEntity(nameValuePairs1, "utf-8"));
-                HttpResponse httpr1 = httpclient1.execute(httppost1);
-
-                if (httpr1.getStatusLine().getStatusCode() != 200) {
-                    Log.d("this ndio hii", "Server encountered an error");
-                }
-
-        	       /*HttpEntity he = httpr.getEntity();
-        	       output = EntityUtils.toString(he);*/
-
-                BufferedReader reader1 = new BufferedReader(new InputStreamReader(httpr1.getEntity().getContent(), "UTF8"));
-                sb1 = new StringBuilder();
-                sb1.append(reader1.readLine() + "\n");
-                String line1 = null;
-
-                while ((line1 = reader1.readLine()) != null) {
-                    sb1.append(line1 + "\n");
-                }
-
-                output1 = sb1.toString();
-
-            } catch (NullPointerException e) {
-                e.printStackTrace();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            return output1;
-
-        }
-
-        @SuppressWarnings("unused")
-        protected void onProgressUpdate(int...progress) {
-            mpd.setProgress(progress[0]);
-
-        }
-
-
-
-        @Override
-        protected void onPostExecute(String output1) {
-
-            try {
-                mpd.dismiss();
-                String vitingapi = output1.toString().trim();
-
-                if (vitingapi.equals("pass")){
-                    spatiadb.execSQL("DROP TABLE IF EXISTS datTBL");
-                      spatiadb.execSQL("CREATE TABLE IF NOT EXISTS datTBL(datno VARCHAR,datftrname VARCHAR,datcom VARCHAR,datx VARCHAR,daty VARCHAR,datpicnm VARCHAR);");
-                           diambaids(View);
-                }else{
-                    diambaidno(View);
-                }
-
-            }catch(Exception x){
-                Log.e("tf",x.toString());
-                diambaidno(View);
-            }
-
-
-        }
-
-    }
-
 
     public void diambaids(View v) {
         final Dialog mbott = new Dialog(MainActivity.this, android.R.style.Theme_Translucent_NoTitleBar);
@@ -969,9 +612,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         mbaok.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-
-                Intent intent = new Intent (MainActivity.this, MainActivity.class);
-                startActivity(intent);
 
                 mbott.dismiss();
             }
@@ -1052,203 +692,43 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
 
-    private class HttpAsyncTasktumapcha extends AsyncTask<String, Void, String> {
 
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mpd = new ProgressDialog(MainActivity.this);
-            mpd.setMessage("Sending Images... Make sure internet connection is active");
-            mpd.setIndeterminate(true);
-            mpd.setCanceledOnTouchOutside(false);
-            mpd.setMax(100);
-            mpd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            mpd.show();
-        }
-
-
-
-        @Override
-        protected String doInBackground(String... urls) {
-
-            String output1=null;
-            for (String url:urls){
-                output1 = getOutputFromUrl(url);
-            }
-
-            return output1;
-        }
-
-        private String getOutputFromUrl(String url){
-            String output1=null;
-            StringBuilder sb1 = new StringBuilder();
-
-
-            try {
-
-
-
-                HttpClient httpclient1 = new DefaultHttpClient();
-                HttpPost httppost1 = new HttpPost(url);
-                List<NameValuePair> nameValuePairs1 = new ArrayList<NameValuePair>(2);
-                nameValuePairs1.add(new BasicNameValuePair("pichan", zipfilo));
-                nameValuePairs1.add(new BasicNameValuePair("pichar", lefile));
-                httppost1.setEntity(new UrlEncodedFormEntity(nameValuePairs1, "utf-8"));
-                HttpResponse httpr1 = httpclient1.execute(httppost1);
-
-                if (httpr1.getStatusLine().getStatusCode() != 200) {
-                    Log.d("this ndio hii", "Server encountered an error");
-                }
-
-        	       /*HttpEntity he = httpr.getEntity();
-        	       output = EntityUtils.toString(he);*/
-
-                BufferedReader reader1 = new BufferedReader(new InputStreamReader(httpr1.getEntity().getContent(), "UTF8"));
-                sb1 = new StringBuilder();
-                sb1.append(reader1.readLine() + "\n");
-                String line1 = null;
-
-                while ((line1 = reader1.readLine()) != null) {
-                    sb1.append(line1 + "\n");
-                }
-
-                output1 = sb1.toString();
-
-            } catch (NullPointerException e) {
-                e.printStackTrace();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            return output1;
-
-        }
-
-        @SuppressWarnings("unused")
-        protected void onProgressUpdate(int...progress) {
-            mpd.setProgress(progress[0]);
-
-        }
-
-
-
-        @Override
-        protected void onPostExecute(String output1) {
-
-            mpd.dismiss();
-
-            try {
-                String vitingapi = output1.toString().trim();
-
-                if (vitingapi.contains("inflating")){
-                    /*spatiadb.execSQL("DROP TABLE IF EXISTS picTBL");
-                    spatiadb.execSQL("CREATE TABLE IF NOT EXISTS picTBL(userpic VARCHAR);");*/
-/*
-                    String basi = "done";
-                    sjdbajs
-
-                    Cursor chk2=spatiadb.rawQuery("SELECT * FROM picTBL WHERE userpic='"+pico+"'", null);
-                    if(chk2.moveToFirst())
-                    {
-                        spatiadb.execSQL("UPDATE picTBL SET sendstat='"+basi+"' WHERE userpic='"+pico+"'");
-
-                        String picok = chk2.getString(0);
-                        String picopk = chk2.getString(1);
-                        String picopkk = chk2.getString(2);
-
-                        Log.e(" IMAGES SUCCESS ---- ", picok + " ---------- " + picopk + " ---------- " + picopkk);
-
-
-                    }
-                    chk2.close();*/
-
-                    spatiadb.execSQL("DROP TABLE IF EXISTS picTBL");
-                    spatiadb.execSQL("CREATE TABLE IF NOT EXISTS picTBL(userpic VARCHAR, userpicpath VARCHAR, sendstat VARCHAR);");
-
-
-                    //      diambaids(View);
-                }else{
-                    //   diambaidno(View);
-                }
-
-            }catch(Exception x){
-                // diambaidno(View);
-            }
-        }
-
-    }
 
 
     private void lapica(){
 
         storapic.clear();
-        Cursor chk2f=spatiadb.rawQuery("SELECT * FROM picTBL", null);
+        if (db.getRowCount(Constantori.TABLE_PIC,"","") > 0) {
 
-        if (chk2f.moveToFirst())
-        {
-            String picok = chk2f.getString(0);
-            String picopk = chk2f.getString(1);
-            String picopkk = chk2f.getString(2);
+            List<HashMap<String, String>> picList = db.GetAllData(Constantori.TABLE_PIC, "", "");
 
-            //Log.e(" IMAGES AS IS ---- ", picok + " ---------- " + picopk + " ---------- " + picopkk);
+            for (HashMap<String, String> picData: picList){
+
+                String picopk = picData.get(Constantori.KEY_USERPICPATH);
+
+                Bitmap iopic = ShrinkBitmap(picopk, 200, 200);
+                File file = new File(picopk);
+                if (file.exists())
+                    file.delete();
+                try {
+                    FileOutputStream out = new FileOutputStream(file);
+                    iopic.compress(Bitmap.CompressFormat.JPEG, 90, out);
+                    out.flush();
+                    out.close();
+
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
 
 
-            Bitmap iopic = ShrinkBitmap(picopk, 200, 200);
-            File file = new File(picopk);
-            if (file.exists())
-                file.delete();
-            try {
-                FileOutputStream out = new FileOutputStream(file);
-                iopic.compress(Bitmap.CompressFormat.JPEG, 90, out);
-                out.flush();
-                out.close();
+                storapic.add(picopk);
+
+
 
             }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
-
-
-            storapic.add(picopk);
 
         }
-
-
-
-        while (chk2f.moveToNext())
-        {
-            String picok = chk2f.getString(0);
-            String picopk = chk2f.getString(1);
-            String picopkk = chk2f.getString(2);
-
-             //Log.e(" IMAGES AS IS ---- ", picok + " ---------- " + picopk + " ---------- " + picopkk);
-
-
-            Bitmap iopic = ShrinkBitmap(picopk, 200, 200);
-            File file = new File(picopk);
-            if (file.exists())
-                file.delete();
-            try {
-                FileOutputStream out = new FileOutputStream(file);
-                iopic.compress(Bitmap.CompressFormat.JPEG, 90, out);
-                out.flush();
-                out.close();
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
-
-
-            storapic.add(picopk);
-
-        }
-
-        chk2f.close();
-
-        /*for(int i=0; i < storapic.size(); i++) {
-            Log.e(" Loops ---- ", String.valueOf(i));
-        }*/
 
         String root = Environment.getExternalStorageDirectory().getAbsolutePath() + "/IMGLULC";
         File myDir = new File(root,zipfilo);
@@ -1341,28 +821,54 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
 
 
-/*    public static byte[] convertFileToByteArray(File f)
+    @Override
+    public void AsyncTaskCompleteListener(String result, String sender, String TableName, String FieldName)
     {
-        byte[] byteArray = null;
-        try
-        {
-            InputStream inputStream = new FileInputStream(f);
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            byte[] b = new byte[1024*8];
-            int bytesRead =0;
+        switch (sender){
+            case "maindata_PostJSON":
 
-            while ((bytesRead = inputStream.read(b)) != -1)
-            {
-                bos.write(b, 0, bytesRead);
-            }
+                if(result.equals(null)) {
+                    Toast.makeText(MainActivity.this, "Server updating, please wait and try again", Toast.LENGTH_LONG).show();
+                }else if(result.equals("Issue")) {
+                    Constantori.diambaidno(View);
 
-            byteArray = bos.toByteArray();
+                }else{
+
+                    try {
+                        JSONArray storesArray = new JSONArray(result);
+
+                        db.DataPost_Status(storesArray, Constantori.TABLE_DAT);
+
+                    }catch (Exception xx){
+                        Log.e(Constantori.APP_ERROR_PREFIX + "_LoginnoJSON", xx.getMessage());
+                        xx.printStackTrace();
+                    }
+
+                }
+
+                break;
+
+            case "maindata_PostImage":
+
+                if(result.equals(null)) {
+                    Toast.makeText(MainActivity.this, "Server updating, please wait and try again", Toast.LENGTH_LONG).show();
+                }else if(result.equals("Issue")) {
+                    Constantori.diambaidno(View);
+
+                }else if (result.contains("inflating")){
+
+                    db.emptyTable(Constantori.TABLE_PIC);
+
+                }
+
+                break;
+
+            default:
+
+                break;
+
         }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-        return byteArray;
-    }*/
+
+    }
 
 }

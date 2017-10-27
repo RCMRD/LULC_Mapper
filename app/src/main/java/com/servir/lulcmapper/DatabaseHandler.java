@@ -65,7 +65,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + Constantori.KEY_DATCOMMENT + " VARCHAR,"
                 + Constantori.KEY_DATLON + " VARCHAR,"
                 + Constantori.KEY_DATLAT + " VARCHAR,"
-                + Constantori.KEY_DATLON + " VARCHAR,"
                 + Constantori.KEY_DATPICNAME + " VARCHAR,"
                 + Constantori.KEY_DATSTATUS + " VARCHAR,"
                 + Constantori.KEY_USERREF + " VARCHAR"
@@ -456,15 +455,35 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
 
-    public int getRowCount(String TableName) {
-        String countQuery = "SELECT  * FROM " + TableName;
-        SQLiteDatabase db = this.getReadableDatabase();
+    public int getRowCount(String TableName, String FieldName, String Value) {
+
+        SQLiteDatabase db = getWritableDatabase();
+
+
+        String searchQuery = "";
+        Cursor cursor = null;
+
+
+        if (FieldName.equals("") && Value.equals("")) {
+            searchQuery = "SELECT  * FROM " + TableName;
+            cursor = db.rawQuery(searchQuery, null );
+
+        }else{
+            searchQuery = "SELECT  * FROM " + TableName + " WHERE " + FieldName + " = ? ";;
+            cursor = db.rawQuery(
+                    searchQuery,
+                    new String[] {Value}
+            );
+        }
+
+
+
         int rowCount = 0;
 
         db.beginTransaction();
 
         try {
-        Cursor cursor = db.rawQuery(countQuery, null);
+
         rowCount = cursor.getCount();
         cursor.close();
             db.setTransactionSuccessful();
@@ -526,8 +545,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 
 
-
-    public JSONArray PostDataArray_Pending(String TableName)
+    public JSONArray PostDataArray_Alldata(String TableName, String FieldName, String Value)
     {
 
         SQLiteDatabase db = getWritableDatabase();
@@ -538,77 +556,22 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         try {
 
-        String one = "1";
-        String zero = "0";
 
-        String searchQuery = "SELECT  * FROM " + TableName + " WHERE edited='" + one + "' OR uploaded='" + zero + "'";
-        Cursor cursor = db.rawQuery(searchQuery, null );
+            String searchQuery = "";
+            Cursor cursor = null;
 
-        cursor.moveToFirst();
-        while (cursor.isAfterLast() == false) {
 
-            int totalColumn = cursor.getColumnCount();
-            JSONObject rowObject = new JSONObject();
+            if (FieldName.equals("") && Value.equals("")) {
+                searchQuery = "SELECT  * FROM " + TableName;
+                cursor = db.rawQuery(searchQuery, null );
 
-            for( int i=0 ;  i< totalColumn ; i++ )
-            {
-                if( cursor.getColumnName(i) != null )
-                {
-                    try
-                    {
-                        if( cursor.getString(i) != null )
-                        {
-                            Log.e(Constantori.APP_ERROR_PREFIX+"_Post_i", cursor.getString(i) );
-                            rowObject.put(cursor.getColumnName(i) ,  cursor.getString(i) );
-                        }
-                        else
-                        {
-                            rowObject.put( cursor.getColumnName(i) ,  "" );
-                        }
-                    }
-                    catch( Exception e )
-                    {
-                        Log.d(Constantori.APP_ERROR_PREFIX+"_Post_Error", "Post_"+TableName);
-                    }
-                }
+            }else{
+                searchQuery = "SELECT  * FROM " + TableName + " WHERE " + FieldName + " = ? ";;
+                cursor = db.rawQuery(
+                        searchQuery,
+                        new String[] {Value}
+                );
             }
-            resultSet.put(rowObject);
-            cursor.moveToNext();
-        }
-        cursor.close();
-        db.setTransactionSuccessful();
-
-    } catch(Exception xx){
-
-        Log.e(Constantori.APP_ERROR_PREFIX+"_PostR_ERROR", xx.getMessage());
-        xx.printStackTrace();
-
-    }finally{
-
-        db.endTransaction();
-        Log.e(Constantori.APP_ERROR_PREFIX+"_PostR_JSON", TableName + " : " +resultSet.toString() );
-        return resultSet;
-
-    }
-
-    }
-
-
-    public JSONArray PostDataArray_Alldata(String TableName)
-    {
-
-        SQLiteDatabase db = getWritableDatabase();
-
-        JSONArray resultSet = new JSONArray();
-
-        db.beginTransaction();
-
-        try {
-
-
-        String searchQuery = "SELECT  * FROM " + TableName;
-        Cursor cursor = db.rawQuery(searchQuery, null );
-
 
 
         cursor.moveToFirst();

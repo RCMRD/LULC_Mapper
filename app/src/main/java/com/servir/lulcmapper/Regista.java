@@ -4,8 +4,11 @@ package com.servir.lulcmapper;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -13,6 +16,8 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -35,20 +40,16 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class Regista extends AppCompatActivity {
+public class Regista extends AppCompatActivity implements AsyncTaskCompleteListener{
 
 	EditText usanem;
 	EditText usafon;
-	EditText usamail,usapaso,usapasoc;
+	EditText usamail,usapaso,usapasoc,usaorg,usarole;
 	View View;
-	String nani;
-	String simu;
-	String pepe;
+	Map<String,String> map = new HashMap<String, String>();
 	String lato, lono;
-	String wapi;
 	String reggo = "";
-	private SQLiteDatabase spatiadb;
-	String huyu = "user";
+	DatabaseHandler db = DatabaseHandler.getInstance(this);
 	private String cntry;
 	final Context context = this;
 	private String cntryy;
@@ -56,8 +57,11 @@ public class Regista extends AppCompatActivity {
 	private String ssusafon;
 	private String ssusapepe;
 	private String ssusapaso;
-	ProgressDialog mpd3;
-	public static final String URL2 = "http://mobiledata.rcmrd.org/lulc/spatiareg.php";
+	private String ssusaorg;
+	private String ssusarole;
+	private String ssusaref;
+
+
 	TextView uucnt;
 
 	 @Override
@@ -74,6 +78,8 @@ public class Regista extends AppCompatActivity {
 		 usanem = (EditText) findViewById(R.id.username);
 		 usafon = (EditText) findViewById(R.id.uphoneno);
 		 usamail = (EditText) findViewById(R.id.uemailo);
+		 usaorg = (EditText) findViewById(R.id.uorgo);
+		 usarole = (EditText) findViewById(R.id.urolo);
 		 usapaso = (EditText) findViewById(R.id.upasso);
 		 usapasoc = (EditText) findViewById(R.id.upasso2);
 		 uucnt = (TextView) findViewById(R.id.textView333);
@@ -334,23 +340,10 @@ public class Regista extends AppCompatActivity {
 		 }
 
 
+		 doDBstuff("Login");
 
 		 
-		 spatiadb=openOrCreateDatabase("LULCDB", Context.MODE_PRIVATE, null);
-		 spatiadb.execSQL("CREATE TABLE IF NOT EXISTS userTBL(userno VARCHAR,usernem VARCHAR,usertel VARCHAR,usercntry VARCHAR,useremail VARCHAR,userpass VARCHAR);");
-	
-		 
-		 
-		 Cursor c=spatiadb.rawQuery("SELECT * FROM userTBL WHERE userno='"+huyu+"'", null);
-			if(c.moveToFirst())
-			{
-				usanem.setText(c.getString(1));
-				usafon.setText(c.getString(2));
-				uucnt.setText(c.getString(3));
-				usamail.setText(c.getString(4));
-				usapaso.setText(c.getString(5));
-				
-			}
+
 			
 			Intent intentqa = getIntent();
 			 lato = intentqa.getStringExtra("lattt");
@@ -359,16 +352,7 @@ public class Regista extends AppCompatActivity {
 		 Intent intentqo = getIntent();
 		 reggo = intentqo.getStringExtra("reggo");
 			
-		/*	butback.setOnClickListener(new OnClickListener(){
-		    	
-		    	public void onClick(View view){
-		    		finish();
-		    		
-		    	Intent intent = new Intent (Regista.this, MainActivity.class);
-		    	startActivity(intent);
-		    	
-		    	}
-		      });*/
+
 			
 			butreg.setOnClickListener(new OnClickListener(){
 		    	
@@ -385,47 +369,68 @@ public class Regista extends AppCompatActivity {
 		    		ssusapepe = usamail.getText().toString().trim();
 		    		ssusapepe.replace("'", "''");
 					ssusapepe.trim();
+
+					ssusaorg = usaorg.getText().toString().trim();
+					ssusaorg.replace("'", "''");
+					ssusaorg.trim();
+
+					ssusarole = usarole.getText().toString().trim();
+					ssusarole.replace("'", "''");
+					ssusarole.trim();
+
 					ssusapaso = usapaso.getText().toString().trim();
+
+
 		    		
 		    		
 		    		
 		            if(    usanem.getText().toString().trim().length()==0 ||
 		            		usafon.getText().toString().trim().length()==0||
+							usamail.getText().toString().trim().length()==0 ||
+		            		usarole.getText().toString().trim().length()==0||
+		            		usaorg.getText().toString().trim().length()==0||
 							usapaso.getText().toString().trim().length()==0
 		         		   )
 		               {
-		            	Toast.makeText(Regista.this,"Please type in your name and phone number",Toast.LENGTH_LONG).show();
+		            	Toast.makeText(Regista.this,"Please fill all required fields first",Toast.LENGTH_LONG).show();
 		               } else if (usafon.getText().toString().trim().length()!=0 &&
          		         		   usafon.getText().toString().trim().length() < 6||
         		         		   usafon.getText().toString().trim().length() > 13){
 		            	   Toast.makeText(Regista.this,"Please enter a valid phone number",Toast.LENGTH_LONG).show();
-                       } else if ( usamail.getText().toString().trim().length()==0 && usafon.getText().toString().trim().length()==0){
+                       /*} else if ( usamail.getText().toString().trim().length()==0 && usafon.getText().toString().trim().length()==0){
                     	   Toast.makeText(Regista.this,"Please enter at least your phone number or email.",Toast.LENGTH_LONG).show();
+					}else if(orga.getSelectedItem().toString().trim().equals("SELECT")){
+
+						Toast.makeText(Regista.this, "Please specify the organisation", Toast.LENGTH_LONG ).show();
+						*/
+
+
 					} else if (!usapaso.getText().toString().trim().equals(usapasoc.getText().toString().trim())){
 						Toast.makeText(Regista.this,"Please make sure the passwords match.",Toast.LENGTH_LONG).show();
                        }else{
 		         	    	       
-		         	    	      // new HttpAsyncTask0().execute(new String[]{URLc});
-		         			 
-                    	   Cursor chk=spatiadb.rawQuery("SELECT * FROM userTBL WHERE userno='"+huyu+"'", null);
-                	 		if(chk.moveToFirst())
-                	 		{                                                                                                                                                                                                                                                                                                                                                                                                                   
-                	 	    spatiadb.execSQL("UPDATE userTBL SET usernem='"+ssusanem+"',usertel='"+ssusafon+"',usercntry='"+cntry+"',useremail='"+ssusapepe+"',userpass='"+ssusapaso+"' WHERE userno='"+huyu+"'");
-                	 		}
-                	 		else
-                	 		{
-                	 		spatiadb.execSQL("INSERT INTO userTBL VALUES('"+huyu+"','"+ssusanem+"','"+ssusafon+"','"+cntry+"','"+ssusapepe+"','"+ssusapaso+"');");
-                	 		}
-						chk.close();
+		         	    
 
 				         	    	
-				         	 		simu = ssusafon;
-				         	 		nani = ssusanem;
-				         	 		wapi = cntry;
-				         	 		pepe = ssusapepe;
+
+
+						map.put(Constantori.KEY_USERACTIVE, Constantori.USERACTIVE);
+						map.put(Constantori.KEY_USERNEM,ssusanem);
+						map.put(Constantori.KEY_USERTEL,ssusafon);
+						map.put(Constantori.KEY_USERCNTRY,cntry);
+						map.put(Constantori.KEY_USEREMAIL, ssusapepe);
+						map.put(Constantori.KEY_USERPASS,ssusapaso);
+						map.put(Constantori.KEY_USERORG,ssusaorg);
+						map.put(Constantori.KEY_USERROLE,ssusarole);
+						map.put(Constantori.KEY_USERLAT,lato);
+						map.put(Constantori.KEY_USERLON,lono);
+						map.put(Constantori.KEY_USERREF,ssusaref);
+
+						doDBstuff("Saving");
 				         	 		
 				         	 		
-				         	 		new HttpAsyncTaskreg().execute(new String[]{URL2});
+
+						new NetPost(Regista.this,"regista_PostJSON",Constantori.getJSON(map),"Registering.....", Constantori.TABLE_REGISTER, Constantori.KEY_USERACTIVE).execute(new String[]{Constantori.URL_REGISTER});
 				         	 		
 		         	       }
 		    	}
@@ -445,7 +450,7 @@ public class Regista extends AppCompatActivity {
 		mbott.getWindow().setAttributes(lp);
 		mbott.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
 		mbott.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-		
+
 		Button mbaok = (Button) mbott.findViewById(R.id.mbabtn1);
 		mbaok.setOnClickListener(new OnClickListener(){
 			@Override
@@ -479,144 +484,6 @@ public class Regista extends AppCompatActivity {
     	}
     	return null;
     }
-    
-
-	
-      
-
-    private class HttpAsyncTaskreg extends AsyncTask<String, Void, String> {
-        
-    	@Override
-        protected void onPreExecute() {
-    		super.onPreExecute();
-    	    mpd3 = new ProgressDialog(Regista.this);
-    	    mpd3.setMessage("Registering.....");
-    	    mpd3.setCanceledOnTouchOutside(false);
-    	    mpd3.setIndeterminate(true);
-    	    mpd3.setMax(100);
-    	    mpd3.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-    	    mpd3.show();
-    	    
-    	}
-    	
-    	@Override
-        protected String doInBackground(String... urls) {
-
-    		String outputi=null;
-    		for (String url:urls){
-    			outputi = getOutputFromUrl(url);
-    		}
-    		
-    		return outputi;
-    	}
-    	
-    	private String getOutputFromUrl(String url){
-        	String outputi=null;    
-        	StringBuilder sb3 = new StringBuilder();
-        	
-    		
-        	try {
-        		HttpClient httpclient = new DefaultHttpClient();
-            	HttpPost httppost = new HttpPost(url);
-            	List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(7);
-      	        nameValuePairs.add(new BasicNameValuePair("nani", nani));
-      	        nameValuePairs.add(new BasicNameValuePair("simu", simu));
-    	        nameValuePairs.add(new BasicNameValuePair("wapi", wapi));
-    	        nameValuePairs.add(new BasicNameValuePair("pepe", pepe));
-				nameValuePairs.add(new BasicNameValuePair("pasd", ssusapaso));
-    	        nameValuePairs.add(new BasicNameValuePair("lato", lato));
-    	        nameValuePairs.add(new BasicNameValuePair("lono", lono));
-    	        httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs, "utf-8"));
-      	       
-        		HttpResponse httpr = httpclient.execute(httppost);
-     	       
-     	      if (httpr.getStatusLine().getStatusCode() != 200) {
-                  Log.d("this ndio hii", "Server encountered an error");
-                }
-              
-    	     BufferedReader reader = new BufferedReader(new InputStreamReader(httpr.getEntity().getContent(), "UTF8"));
-             sb3 = new StringBuilder();
-             sb3.append(reader.readLine() + "\n");
-             String line3 = null;
-
-             while ((line3 = reader.readLine()) != null) {
-               sb3.append(line3 + "\n");
-             }
-
-                 outputi = sb3.toString();
-               
-            } catch (NullPointerException e) {
-                e.printStackTrace();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        
-        	return outputi;
-        
-    	}
-    	
-
-    	@SuppressWarnings("unused")
-    	protected void onProgressUpdate(int...progress) {
-    		mpd3.setProgress(progress[0]);
-    	    
-    	}
-    	
-    	
-        // onPostExecute displays the results of the AsyncTask.
-        @Override
-        protected void onPostExecute(String outputi) {
-        	try{
-        		String mekamu = outputi.toString().trim();
-        		
-        		Log.e("shida", mekamu);
-        		
-        		if (mekamu.equals("steve")){
-
-					Cursor chk=spatiadb.rawQuery("SELECT * FROM userTBL WHERE userno='"+huyu+"'", null);
-					if(chk.moveToFirst())
-					{
-						spatiadb.execSQL("UPDATE userTBL SET usernem='"+ssusanem+"',usertel='"+ssusafon+"',usercntry='"+cntry+"',useremail='"+ssusapepe+"',userpass='"+ssusapaso+"' WHERE userno='"+huyu+"'");
-					}
-					else
-					{
-						spatiadb.execSQL("INSERT INTO userTBL VALUES('"+huyu+"','"+ssusanem+"','"+ssusafon+"','"+cntry+"','"+ssusapepe+"','"+ssusapaso+"');");
-					}
-					chk.close();
-
-         	 		diambaid2(View);
- 	    		
-        		}else{
-        			diambaidno(View);
-        		}
-        			
-        	}catch(Exception xe){
-        		diambaidno(View);
-        	}
-            mpd3.dismiss();
-       }
-    }
-        
-    public void diambaidno(View v) {
-		final Dialog mbott = new Dialog(Regista.this, android.R.style.Theme_Translucent_NoTitleBar);
-		mbott.setContentView(R.layout.mbaind_nonet3);
-		mbott.setCanceledOnTouchOutside(false);
-		mbott.setCancelable(false);
-		WindowManager.LayoutParams lp = mbott.getWindow().getAttributes();
-		lp.dimAmount=0.85f;
-		mbott.getWindow().setAttributes(lp);
-		mbott.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-		mbott.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-		
-		Button mbaok = (Button) mbott.findViewById(R.id.mbabtn1);
-		mbaok.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View v){
-					mbott.dismiss();
-			}
-		});
-		mbott.show();
-	}
 
 
 	@Override
@@ -657,7 +524,100 @@ public class Regista extends AppCompatActivity {
 	}
 
 
+	public void doDBstuff(String where){
 
+
+
+		switch (where){
+
+			case "Login":
+
+				if (db.CheckIsDataAlreadyInDBorNot(Constantori.TABLE_REGISTER, Constantori.KEY_USERACTIVE, Constantori.USERACTIVE)) {
+
+					List<HashMap<String, String>> regData = db.GetAllData(Constantori.TABLE_REGISTER, "", "");
+
+					HashMap<String, String> UserDetails = regData.get(0);
+
+					usanem.setText(UserDetails.get(Constantori.KEY_USERNEM));
+					usafon.setText(UserDetails.get(Constantori.KEY_USERTEL));
+					uucnt.setText(UserDetails.get(Constantori.KEY_USERCNTRY));
+					usamail.setText(UserDetails.get(Constantori.KEY_USEREMAIL));
+					usaorg.setText(UserDetails.get(Constantori.KEY_USERORG));
+					usarole.setText(UserDetails.get(Constantori.KEY_USERROLE));
+					usapaso.setText(UserDetails.get(Constantori.KEY_USERPASS));
+
+					ssusaref = UserDetails.get(Constantori.KEY_USERREF);
+
+					/*for (int i = 0; i < orga.getAdapter().getCount(); i++) {
+						if (UserDetails.get(Constantori.KEY_USERORG).trim().equals(orga.getAdapter().getItem(i).toString())) {
+							orga.setSelection(i);
+							break;
+						}
+					}*/
+				}else{
+					ssusaref = Constantori.USERREFNULL;
+				}
+
+				break;
+
+			case "Saving":
+
+				if (db.CheckIsDataAlreadyInDBorNot(Constantori.TABLE_REGISTER, Constantori.KEY_USERACTIVE, Constantori.USERACTIVE)) {
+					db.RegisterUser_Update(Constantori.getJSON(map));
+					Log.e(Constantori.APP_ERROR_PREFIX + "_RegUp", "Updating Register");
+				}else {
+					db.RegisterUser_Insert(Constantori.getJSON(map));
+					Log.e(Constantori.APP_ERROR_PREFIX + "_RegIn", "Inserting Register");
+				}
+
+				break;
+
+			default:
+				//System.out.println("Uuuuuwi");
+				break;
+		}
+
+	}
+
+
+
+	@Override
+	public void AsyncTaskCompleteListener(String result, String sender, String TableName, String FieldName)
+	{
+		switch (sender){
+			case "regista_PostJSON":
+
+				if(result.equals(null)) {
+					Toast.makeText(Regista.this, "Server updating, please wait and try again", Toast.LENGTH_LONG).show();
+				}else if(result.equals("Issue")) {
+					Constantori.diambaidno(View);
+				}else{
+
+					try {
+						JSONArray storesArray = new JSONArray(result);
+						JSONObject storeObject = storesArray.getJSONObject(0);
+						String pass = storeObject.getString(Constantori.POST_RESPONSEKEY);
+
+						if (pass.equals(Constantori.POST_RESPONSEVAL)) {
+							diambaid2(View);
+						}
+
+					}catch (Exception xx){
+						Log.e(Constantori.APP_ERROR_PREFIX + "_RegistaJSON", xx.getMessage());
+						xx.printStackTrace();
+					}
+
+				}
+
+				break;
+
+			default:
+
+				break;
+
+		}
+
+	}
 
 
 }

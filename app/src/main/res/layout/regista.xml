@@ -96,11 +96,55 @@
     </EditText>
 
         <TextView
-            android:id="@+id/textViewe2"
+            android:id="@+id/textOrg"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignLeft="@+id/uemailo"
             android:layout_below="@+id/uemailo"
+            android:text="@string/orgaa" />
+
+        <EditText
+            android:id="@+id/uorgo"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/orgaa"
+            android:layout_alignLeft="@+id/textOrg"
+            android:layout_marginBottom="10dp"
+            android:layout_below="@+id/textOrg"
+            android:inputType="text"
+            android:ems="10" >
+
+        </EditText>
+
+        <TextView
+            android:id="@+id/textRole"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/uorgo"
+            android:layout_below="@+id/uorgo"
+            android:text="@string/rolee" />
+
+        <EditText
+            android:id="@+id/urolo"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/roleehelp"
+            android:layout_alignLeft="@+id/textRole"
+            android:layout_marginBottom="10dp"
+            android:layout_below="@+id/textRole"
+            android:inputType="text"
+            android:ems="10" >
+
+        </EditText>
+
+
+
+        <TextView
+            android:id="@+id/textViewe2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/urolo"
+            android:layout_below="@+id/urolo"
             android:text="Password" />
 
         <EditText
