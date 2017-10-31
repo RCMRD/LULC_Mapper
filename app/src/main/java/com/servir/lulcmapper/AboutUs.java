@@ -25,7 +25,7 @@ public class AboutUs extends ActionBarActivity {
             tokaa = (Button) findViewById(R.id.rback);
 
 		  getSupportActionBar().setDisplayShowHomeEnabled(true);
-		  getSupportActionBar().setIcon(R.mipmap.ic_launcher);
+		  getSupportActionBar().setIcon(R.mipmap.lulc_launcher);
             
             
         		

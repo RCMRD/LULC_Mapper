@@ -34,13 +34,14 @@ public class NetPost extends AsyncTask<String, Void, String> {
     private AsyncTaskCompleteListener listener;
 
 
-    public NetPost(Context Context, String postVar, JSONArray JSONarray, String msgDialog, String TableName, String FieldName){
+    public NetPost(Context Context, String postVar, JSONArray JSONarray, String msgDialog, String TableName, String FieldName, AsyncTaskCompleteListener listener){
         this.context = Context;
         this.postVar = postVar;
         this.TableName = TableName;
         this.FieldName = FieldName;
         this.jsonString = JSONarray.toString();
         this.msgDialog = msgDialog;
+        this.listener = listener;
     }
 
 
@@ -129,6 +130,10 @@ public class NetPost extends AsyncTask<String, Void, String> {
             vitingapi = output1.toString().trim();
 
             Log.e(postVar,vitingapi);
+            Log.e("matiangi",vitingapi);
+            Log.e("matiangi",postVar);
+            Log.e("matiangi",TableName);
+            Log.e("matiangi",FieldName);
 
             listener.AsyncTaskCompleteListener(vitingapi,postVar,TableName, FieldName);
 

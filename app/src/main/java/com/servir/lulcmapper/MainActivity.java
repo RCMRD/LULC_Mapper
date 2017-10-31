@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         overridePendingTransition(0,0);
 
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setIcon(R.mipmap.ic_launcher);
+        getSupportActionBar().setIcon(R.mipmap.lulc_launcher);
 
         textSwitcher = (TextSwitcher) findViewById(R.id.textswitcher);
         btnreg = (LinearLayout) findViewById(R.id.btn1);
@@ -308,7 +308,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                         JSONArray sendo = db.PostDataArray_Alldata(Constantori.TABLE_DAT, Constantori.KEY_DATSTATUS, Constantori.SAVE_DATSTATUS);
 
-                        new NetPost(MainActivity.this, "maindata_PostJSON", sendo, "Sending... Make sure internet connection is active", Constantori.TABLE_DAT, Constantori.KEY_DATSTATUS).execute(new String[]{Constantori.URL_MAINPOST});
+                        new NetPost(MainActivity.this, "maindata_PostJSON", sendo, "Sending... Make sure internet connection is active", Constantori.TABLE_DAT, Constantori.KEY_DATSTATUS, new MainActivity()).execute(new String[]{Constantori.URL_MAINPOST});
                     }else{
                         hexa++;
                     }
@@ -330,7 +330,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                             picArray.put(allImages);
 
-                            new NetPost(MainActivity.this, "maindata_PostImages", picArray, "Sending Images... Make sure internet connection is active",Constantori.TABLE_PIC,null).execute(new String[]{Constantori.URL_PIC});
+                            new NetPost(MainActivity.this, "maindata_PostImages", picArray, "Sending Images... Make sure internet connection is active",Constantori.TABLE_PIC,null, new MainActivity()).execute(new String[]{Constantori.URL_PIC});
 
                         }catch (Exception xx){
 

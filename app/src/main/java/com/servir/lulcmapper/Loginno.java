@@ -246,7 +246,7 @@ public class Loginno extends AppCompatActivity implements AsyncTaskCompleteListe
                 map.put("mail", myil);
 
 
-                new NetPost(Loginno.this,"login_CheckJSON",Constantori.getJSON(map),"Authenticating. Make sure internet connection is active", Constantori.TABLE_REGISTER, Constantori.KEY_USERACTIVE).execute(new String[]{Constantori.URL_LOGIN});
+                new NetPost(Loginno.this,"login_CheckJSON",Constantori.getJSON(map),"Authenticating. Make sure internet connection is active", Constantori.TABLE_REGISTER, Constantori.KEY_USERACTIVE, new Loginno()).execute(new String[]{Constantori.URL_LOGIN});
 
 
 

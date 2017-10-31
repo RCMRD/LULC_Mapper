@@ -72,9 +72,13 @@ public class Constantori {
     //////////////////////////////////////////////////////////////////////////////
 
     public static final String URL_LOGIN = "http://mobiledata.rcmrd.org/lulc/checka.php";
-    public static final String URL_REGISTER = "http://mobiledata.rcmrd.org/lulc/spatiareg.php";
+    public static final String URL_REGISTER = "http://mobiledata.rcmrd.org/lulc/lulc_gen.php";
     public static final String URL_MAINPOST = "http://mobiledata.rcmrd.org/lulc/senda.php";
     public static final String URL_PIC = "http://mobiledata.rcmrd.org/lulc/sendapic.php";
+
+    /////////////////////////////////////////////////////////////////////////////
+    public static final String ERROR_USER_EXISTS = "You are already registered.";
+    public static final String ERROR_SERVER_ISSUE = "Server updating, please wait and try again";
 
 
 

@@ -88,7 +88,7 @@ import android.widget.Toast;
         overridePendingTransition(0,0);
 
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setIcon(R.mipmap.ic_launcher);
+        getSupportActionBar().setIcon(R.mipmap.lulc_launcher);
 
 
 

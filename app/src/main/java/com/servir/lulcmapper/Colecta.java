@@ -91,7 +91,7 @@ public class Colecta extends ActionBarActivity {
         overridePendingTransition(0,0);
 
 		getSupportActionBar().setDisplayShowHomeEnabled(true);
-		getSupportActionBar().setIcon(R.mipmap.ic_launcher);
+		getSupportActionBar().setIcon(R.mipmap.lulc_launcher);
 
 		if (Build.VERSION.SDK_INT < 23) {
 

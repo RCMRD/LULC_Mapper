@@ -71,7 +71,7 @@ public class Regista extends AppCompatActivity implements AsyncTaskCompleteListe
 	     overridePendingTransition(0,0);
 
          getSupportActionBar().setDisplayShowHomeEnabled(true);
-		 getSupportActionBar().setIcon(R.mipmap.ic_launcher);
+		 getSupportActionBar().setIcon(R.mipmap.lulc_launcher);
 		 getSupportActionBar().setHomeButtonEnabled(true);
 	 
 	 
@@ -430,7 +430,7 @@ public class Regista extends AppCompatActivity implements AsyncTaskCompleteListe
 				         	 		
 				         	 		
 
-						new NetPost(Regista.this,"regista_PostJSON",Constantori.getJSON(map),"Registering.....", Constantori.TABLE_REGISTER, Constantori.KEY_USERACTIVE).execute(new String[]{Constantori.URL_REGISTER});
+						new NetPost(Regista.this,"regista_PostJSON",Constantori.getJSON(map),"Registering.....", Constantori.TABLE_REGISTER, Constantori.KEY_USERACTIVE, new Regista()).execute(new String[]{Constantori.URL_REGISTER});
 				         	 		
 		         	       }
 		    	}
@@ -441,7 +441,7 @@ public class Regista extends AppCompatActivity implements AsyncTaskCompleteListe
 	
 
    	public void diambaid2(View v) {
-		final Dialog mbott = new Dialog(this, android.R.style.Theme_Translucent_NoTitleBar);
+		final Dialog mbott = new Dialog(Regista.this, android.R.style.Theme_Translucent_NoTitleBar);
 		mbott.setContentView(R.layout.mbaind_dialog2);
 		mbott.setCanceledOnTouchOutside(false);
 		mbott.setCancelable(false);
@@ -588,9 +588,12 @@ public class Regista extends AppCompatActivity implements AsyncTaskCompleteListe
 			case "regista_PostJSON":
 
 				if(result.equals(null)) {
-					Toast.makeText(Regista.this, "Server updating, please wait and try again", Toast.LENGTH_LONG).show();
+					Toast.makeText(Regista.this, Constantori.ERROR_SERVER_ISSUE, Toast.LENGTH_LONG).show();
 				}else if(result.equals("Issue")) {
 					Constantori.diambaidno(View);
+				}else if(result.equals("404")) {
+					Constantori.diambaidno(View);
+					Toast.makeText(Regista.this, Constantori.ERROR_USER_EXISTS, Toast.LENGTH_LONG).show();
 				}else{
 
 					try {
