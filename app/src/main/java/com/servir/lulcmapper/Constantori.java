@@ -1,6 +1,7 @@
 package com.servir.lulcmapper;
 
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -9,6 +10,9 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -82,6 +86,9 @@ public class Constantori {
     public static final String ERROR_NO_INTERNET = "No internet connection, please connect and try again.";
     public static final String ERROR_APPROVAL = "You have not been approved yet by the administrator.";
     public static final String ERROR_PASSWORD = "Please use correct password";
+
+    public final static int REQUEST_CODE_RECOVER_PLAY_SERVICES = 200;
+    public final static int REQUEST_LOCATION = 2;
 
 
 
@@ -160,6 +167,20 @@ public class Constantori {
 
         }
         return false;
+    }
+
+
+    public static boolean isgpsa(Activity activity) {
+        // TODO Auto-generated method stub
+        GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
+        int status = googleApiAvailability.isGooglePlayServicesAvailable(activity);
+        if(status != ConnectionResult.SUCCESS) {
+            if(googleApiAvailability.isUserResolvableError(status)) {
+                googleApiAvailability.getErrorDialog(activity, status, 2404).show();
+            }
+            return false;
+        }
+        return true;
     }
 
 

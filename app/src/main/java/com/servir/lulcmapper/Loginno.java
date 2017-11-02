@@ -3,13 +3,15 @@ package com.servir.lulcmapper;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -20,8 +22,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
+
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,7 +44,8 @@ public class Loginno extends AppCompatActivity implements AsyncTaskCompleteListe
     View View;
     String mail="";
     public Context context = this;
-    locTrak2 locii =  new locTrak2(context);
+    //locTrak2 locii =  new locTrak2(context);
+    Locatori loka = new Locatori(this, Loginno.this);
     String pass="";
     DatabaseHandler db = DatabaseHandler.getInstance(this);
     String statt = "";
@@ -49,12 +55,6 @@ public class Loginno extends AppCompatActivity implements AsyncTaskCompleteListe
     String refo = "";
     String sax = "0.0";
     String say = "0.0";
-
-
-    List<String> smalla2 = new ArrayList<String>();
-
-    ProgressDialog mpd;
-
     String naniask = "";
     private final static int REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 13;
 
@@ -97,11 +97,35 @@ public class Loginno extends AppCompatActivity implements AsyncTaskCompleteListe
             logemailA.setText(mail);
 
         } else {
-            List<HashMap<String, String>> regData = db.GetAllData(Constantori.TABLE_REGISTER,"","");
-            HashMap<String, String> UserDetails = regData.get(0);
-            Log.e("nkaisery", Constantori.getJSON(UserDetails).toString());
             statt = Constantori.USERUNREG;
         }
+
+
+        /*
+
+        ALTERMATIVE ACCESS METHOD
+
+        App.getGoogleApiHelper().setConnectionListener(new GoogleApiHelper.ConnectionListener() {
+            @Override
+            public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+            }
+
+            @Override
+            public void onConnectionSuspended(int i) {
+
+            }
+
+            @Override
+            public void onConnected(Bundle bundle, GoogleApiClient googleApiClient) {
+                //this function will call whenever google api connected or already connected when setting listener
+                //You are connected do what ever you want
+                //Like i get last known location
+                Location location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+            }
+        });*/
+
+
 
 
         Timer timer = new Timer("swcha");
@@ -115,17 +139,40 @@ public class Loginno extends AppCompatActivity implements AsyncTaskCompleteListe
                     @Override
                     public void run() {
 
-                            if (locii.canGetLocation()) {
-                                if (locii.getLatitude() != 0.0 && locii.getLongitude() != 0.0) {
 
-                                    double slatitude = locii.getLatitude();
-                                    double slongitude = locii.getLongitude();
-                                    sax = String.valueOf(slongitude);
-                                    say = String.valueOf(slatitude);
+                        if(ApplicationContextor.getGoogleApiHelper().isConnected())
+                        {
 
+                            if ( Build.VERSION.SDK_INT >= 23 &&
+                                    ContextCompat.checkSelfPermission( context, android.Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED &&
+                                    ContextCompat.checkSelfPermission( context, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
+                                ActivityCompat.requestPermissions(Loginno.this,
+                                        new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                                        Constantori.REQUEST_LOCATION);
+
+                                ActivityCompat.requestPermissions(Loginno.this,
+                                        new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION},
+                                        Constantori.REQUEST_LOCATION);
+                            } else {
+
+                                GoogleApiClient client = ApplicationContextor.getGoogleApiHelper().getGoogleApiClient();
+
+                                Location ll = LocationServices.FusedLocationApi.getLastLocation(client);
+
+                                if (ll != null) {
+                                    sax = String.valueOf(ll.getLongitude());
+                                    say = String.valueOf(ll.getLatitude());
                                 }
                             }
+
+                        }
+
+
+
+                        //Log.e("wapi", String.format("LAT : %s \n LON : %s", say, sax));
+
+
                     }
 
                 });
@@ -458,6 +505,9 @@ public class Loginno extends AppCompatActivity implements AsyncTaskCompleteListe
         }
 
     }
+
+
+
 
 
 }

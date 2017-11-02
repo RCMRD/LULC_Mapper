@@ -98,7 +98,7 @@ import android.widget.Toast;
 
         backo = (Button) findViewById(R.id.snapppe);
 
-        if (!isgpsa()){
+        if (!Constantori.isgpsa(this)){
             Toast.makeText(this, "Google Play Services is disable on your phone", Toast.LENGTH_LONG).show();
         }
 
@@ -187,17 +187,7 @@ import android.widget.Toast;
 
     }
 
-    private boolean isgpsa() {
-        // TODO Auto-generated method stub
-        int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
-        if(ConnectionResult.SUCCESS == status){
-            return true;
-        }else{
-            GooglePlayServicesUtil.getErrorDialog(status, this,REQUEST_CODE_RECOVER_PLAY_SERVICES).show();
 
-            return false;
-        }
-    }
 
 
     @Override

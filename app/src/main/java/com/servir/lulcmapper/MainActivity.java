@@ -86,8 +86,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     String sax = "0.0";
     String refo="";
     ImageView taftaa;
-    private final static int REQUEST_CODE_RECOVER_PLAY_SERVICES = 200;
-    private final static int REQUEST_LOCATION = 2;
+
 
 
     protected void createlocreq(){
@@ -227,7 +226,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         }, 0, 2000);
 
-        if (!isgpsa(this)){
+        if (!Constantori.isgpsa(this)){
             Toast.makeText(this, "Google Play Services is disabled on your phone", Toast.LENGTH_LONG).show();
         }
 
@@ -377,18 +376,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
 
-    private boolean isgpsa(Activity activity) {
-        // TODO Auto-generated method stub
-        GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
-        int status = googleApiAvailability.isGooglePlayServicesAvailable(activity);
-        if(status != ConnectionResult.SUCCESS) {
-            if(googleApiAvailability.isUserResolvableError(status)) {
-                googleApiAvailability.getErrorDialog(activity, status, 2404).show();
-            }
-            return false;
-        }
-        return true;
-    }
+
 
 
 
@@ -412,11 +400,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
             ActivityCompat.requestPermissions(MainActivity.this,
                     new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                    REQUEST_LOCATION);
+                    Constantori.REQUEST_LOCATION);
 
             ActivityCompat.requestPermissions(MainActivity.this,
                     new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION},
-                    REQUEST_LOCATION);
+                    Constantori.REQUEST_LOCATION);
         } else {
 
             PendingResult<Status> pr = LocationServices.FusedLocationApi.requestLocationUpdates(mgac, mlr, this);
@@ -600,7 +588,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_CODE_RECOVER_PLAY_SERVICES) {
+        if (requestCode == Constantori.REQUEST_CODE_RECOVER_PLAY_SERVICES) {
             if (resultCode == RESULT_OK) {
                 // Make sure the app is not already connected or attempting to connect
                 if (!mgac.isConnecting() &&
@@ -620,7 +608,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     public void onRequestPermissionsResult(int requestCode,
                                            String[] permissions,
                                            int[] grantResults) {
-        if (requestCode == REQUEST_LOCATION) {
+        if (requestCode == Constantori.REQUEST_LOCATION) {
             if(grantResults.length == 1
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
