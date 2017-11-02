@@ -85,7 +85,7 @@ public class NetPost extends AsyncTask<String, Void, String> {
             HttpResponse httpr1 = httpclient1.execute(httppost1);
 
             if (httpr1.getStatusLine().getStatusCode() != 200) {
-                Log.d("this ndio hii", "Server encountered an error");
+                listener.AsyncTaskCompleteListener("Issue","","", "");
             }
 
 
@@ -125,26 +125,20 @@ public class NetPost extends AsyncTask<String, Void, String> {
 
         String vitingapi = null;
 
-        try {
+        if (output1 != null && !output1.isEmpty()) {
 
             vitingapi = output1.toString().trim();
+            Log.e(postVar, vitingapi);
+            Log.e("matiangi", output1);
+            Log.e("matiangi", postVar);
+            Log.e("matiangi", TableName);
+            Log.e("matiangi", FieldName);
 
-            Log.e(postVar,vitingapi);
-            Log.e("matiangi",vitingapi);
-            Log.e("matiangi",postVar);
-            Log.e("matiangi",TableName);
-            Log.e("matiangi",FieldName);
-
-            listener.AsyncTaskCompleteListener(vitingapi,postVar,TableName, FieldName);
-
-
-
-        }catch(Exception x){
-
-            //twisted this a little!
+            listener.AsyncTaskCompleteListener(vitingapi, postVar, TableName, FieldName);
+        }else{
             listener.AsyncTaskCompleteListener("Issue",postVar,vitingapi, FieldName);
-
         }
+
 
         mpd.dismiss();
 

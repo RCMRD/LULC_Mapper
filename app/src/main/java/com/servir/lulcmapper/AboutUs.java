@@ -1,6 +1,7 @@
 package com.servir.lulcmapper;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 public class AboutUs extends ActionBarActivity {
  
 	Button tokaa;
+	Context context = this;
 	TextView tvStn;
     
  
@@ -38,7 +40,7 @@ public class AboutUs extends ActionBarActivity {
             tokaa.setOnClickListener(new OnClickListener(){
       	    	
       	    	public void onClick(View view){
-      	      	Intent intent = new Intent (AboutUs.this, MainActivity.class);
+      	      	Intent intent = new Intent (context, MainActivity.class);
       	    	startActivity(intent);
       	    	finish();
       	    	}

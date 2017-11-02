@@ -20,6 +20,14 @@
     <string name="but3">View Data</string>
     <string name="locstat">Scanning Location :</string>
 
+    <string name="err_msg_name">Please enter your full name</string>
+    <string name="err_msg_email">Please enter a valid email address</string>
+    <string name="err_msg_phone">Please enter a valid phone number</string>
+    <string name="err_msg_org">Please enter your organisation name</string>
+    <string name="err_msg_role">Please enter your role/position/department</string>
+    <string name="err_msg_password">Please enter a password</string>
+    <string name="err_msg_password2">Please make sure the passowrd match</string>
+
     <string name="reggo">Register</string>
     <string name="fulnem">Username</string>
     <string name="fono">Phone Number</string>

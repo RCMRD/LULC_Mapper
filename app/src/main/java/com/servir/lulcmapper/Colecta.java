@@ -4,6 +4,7 @@ package com.servir.lulcmapper;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -70,14 +71,13 @@ public class Colecta extends ActionBarActivity {
 	//RadioButton neww, prevv;
 	String picnm;
 	String refo;
+	Context context = this;
 	String naniask = "";
     String lepicnm;
     File f;
     String taken = "nope";
     int erer = 0;
-	
-	String datloc,rdatno;
-    String lepicpath;
+	String lepicpath;
 	ImageView sceneimage;
 	private final static int PICTURE_STUFF = 1;
 	private final static int REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 13;
@@ -125,8 +125,7 @@ public class Colecta extends ActionBarActivity {
 		 say = intentqsa.getStringExtra("lattt");
 		 Intent intentqdsa = getIntent();
 		 datno = intentqdsa.getStringExtra("datno");
-		    rdatno = datno.replace(":","_");
-		    rdatno = rdatno.replace("-","_");
+
 
 
 		doDBStuff("getRefo");
@@ -169,10 +168,10 @@ public class Colecta extends ActionBarActivity {
 				} else {
 
 					if (
-							ContextCompat.checkSelfPermission(Colecta.this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
-									ContextCompat.checkSelfPermission(Colecta.this, android.Manifest.permission.ACCESS_NETWORK_STATE) == PackageManager.PERMISSION_GRANTED &&
-									ContextCompat.checkSelfPermission(Colecta.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
-									ContextCompat.checkSelfPermission(Colecta.this, android.Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED
+							ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+									ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_NETWORK_STATE) == PackageManager.PERMISSION_GRANTED &&
+									ContextCompat.checkSelfPermission(context, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
+									ContextCompat.checkSelfPermission(context, android.Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED
 
 							) {
 
@@ -199,10 +198,10 @@ public class Colecta extends ActionBarActivity {
     rudi.setOnClickListener(new OnClickListener(){
         	
         	public void onClick(View view){
-        		Intent intent = new Intent (Colecta.this, Selekta.class);
+        		Intent intent = new Intent (context, Selekta.class);
 				intent.putExtra("lattt", say);
 				intent.putExtra("lonnn", sax);
-				intent.putExtra("datno", rdatno);
+				intent.putExtra("datno", datno);
 				startActivity(intent);
         	}
     });
@@ -227,11 +226,9 @@ public class Colecta extends ActionBarActivity {
 
 
        		      	s007 = s7.getText().toString().trim();
-					s001 = s001.replace("'", "''");
-       		     	 s007 = s007.replace("'", "''");
 
-    		      	s001 = s001.replace(",", "~");
-    		      	s007 = s007.replace(",", "~");
+
+
 
        		      
        		    /*  if (s031.equals("Other")){
@@ -250,7 +247,7 @@ public class Colecta extends ActionBarActivity {
        		if(s1.getText().toString().trim().equals("Other") &&
 				s87.getText().toString().equals("")) {
 
-				Toast.makeText(Colecta.this, "Please specify land cover class", Toast.LENGTH_LONG).show();
+				Toast.makeText(context, "Please specify land cover class", Toast.LENGTH_LONG).show();
 
 			}else{
        			
@@ -304,7 +301,7 @@ public class Colecta extends ActionBarActivity {
 	
 	
 	public void diambaids(View v) {
-		final Dialog mbott = new Dialog(Colecta.this, android.R.style.Theme_Translucent_NoTitleBar);
+		final Dialog mbott = new Dialog(context, android.R.style.Theme_Translucent_NoTitleBar);
 		mbott.setContentView(R.layout.mbaind_sav);
 		mbott.setCanceledOnTouchOutside(false);
 		mbott.setCancelable(false);
@@ -324,7 +321,7 @@ public class Colecta extends ActionBarActivity {
 				/*s1.setSelection(0);
 				neww.setChecked(true);*/
 				
-				Intent intent = new Intent (Colecta.this, MainActivity.class);
+				Intent intent = new Intent (context, MainActivity.class);
 	        	startActivity(intent);
 				
 	            
@@ -343,9 +340,8 @@ public class Colecta extends ActionBarActivity {
          	myDir.mkdirs();
          }
 
-
-         picnm = rdatno + "_lulc.jpg";
-		 Log.e("aaaaaaaaa", rdatno);
+		 picnm = datno +   ".jpg";
+		 Log.e("aaaaaaaaa", datno);
          File file = new File(myDir, picnm);
 
          if (file.exists()) {
@@ -371,7 +367,7 @@ public class Colecta extends ActionBarActivity {
              
              }
          catch (Exception e) {
-        	 Toast.makeText(Colecta.this, "Camera error, take photograph again.", Toast.LENGTH_LONG ).show();
+        	 Toast.makeText(context, "Camera error, take photograph again.", Toast.LENGTH_LONG ).show();
              e.printStackTrace();
          }
 
@@ -532,7 +528,7 @@ public class Colecta extends ActionBarActivity {
 	}
 
 	private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {
-		new AlertDialog.Builder(Colecta.this)
+		new AlertDialog.Builder(context)
 				.setMessage(message)
 				.setPositiveButton("OK", okListener)
 				.setNegativeButton("Cancel", null)
@@ -565,11 +561,11 @@ public class Colecta extends ActionBarActivity {
 					if (naniask.equals("Camera")) {
 						PigaPicha();
 					}
-						Toast.makeText(Colecta.this, "Permissions enabled", Toast.LENGTH_LONG).show();
+						Toast.makeText(context, "Permissions enabled", Toast.LENGTH_LONG).show();
 
 				} else {
 					// Permission Denied
-					Toast.makeText(Colecta.this, "Some Permission is Denied", Toast.LENGTH_SHORT)
+					Toast.makeText(context, "Some Permission is Denied", Toast.LENGTH_SHORT)
 							.show();
 				}
 			}
@@ -596,12 +592,12 @@ public class Colecta extends ActionBarActivity {
 
 			try {
 				Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-				intent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(Colecta.this, Colecta.this.getApplicationContext().getPackageName() + ".provider", createImageFile()));
+				intent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(context, context.getApplicationContext().getPackageName() + ".provider", createImageFile()));
 				startActivityForResult(intent, PICTURE_STUFF);
 
 			} catch (Exception zz) {
 				Log.e("camera", zz.getMessage());
-				Toast.makeText(Colecta.this, "Please enable permissions for camera", Toast.LENGTH_LONG).show();
+				Toast.makeText(context, "Please enable permissions for camera", Toast.LENGTH_LONG).show();
 			}
 		}
 	}
@@ -635,6 +631,7 @@ public class Colecta extends ActionBarActivity {
 					HashMap<String, String> allDetails = allData.get(0);
 
 					s1.setText((allDetails.get(Constantori.KEY_DATFEATURE)));
+					s7.setText((allDetails.get(Constantori.KEY_DATCOMMENT)));
 
 					/*
 

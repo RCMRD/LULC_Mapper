@@ -1,34 +1,40 @@
 package com.servir.lulcmapper;
 
 
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.View.OnClickListener;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class Regista extends AppCompatActivity implements AsyncTaskCompleteListener{
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.w3c.dom.Text;
 
-	EditText usanem;
-	EditText usafon;
-	EditText usamail,usapaso,usapasoc,usaorg,usarole;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+public class Regista_new extends AppCompatActivity implements AsyncTaskCompleteListener{
+
+
+	EditText usamail,usapaso,usapasoc,usaorg,usarole, usanem, usafon;
+	TextInputLayout textIL1, textIL2, textIL3, textIL4, textIL5, textIL6, textIL7 ;
 	View View;
 	Map<String,String> map = new HashMap<String, String>();
 	String lato, lono;
@@ -52,7 +58,7 @@ public class Regista extends AppCompatActivity implements AsyncTaskCompleteListe
 	 @Override
 	 protected void onCreate(Bundle savedInstanceState) {
 	     super.onCreate(savedInstanceState);
-	     setContentView(R.layout.regista);
+	     setContentView(R.layout.regista_new);
 	     overridePendingTransition(0,0);
 
          getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -67,10 +73,29 @@ public class Regista extends AppCompatActivity implements AsyncTaskCompleteListe
 		 usarole = (EditText) findViewById(R.id.urolo);
 		 usapaso = (EditText) findViewById(R.id.upasso);
 		 usapasoc = (EditText) findViewById(R.id.upasso2);
+
 		 uucnt = (TextView) findViewById(R.id.textView333);
+
+		 textIL1 = (TextInputLayout)  findViewById(R.id.textIL1);
+		 textIL2 = (TextInputLayout)  findViewById(R.id.textIL2);
+		 textIL3 = (TextInputLayout)  findViewById(R.id.textIL3);
+		 textIL4 = (TextInputLayout)  findViewById(R.id.textIL4);
+		 textIL5 = (TextInputLayout)  findViewById(R.id.textIL5);
+		 textIL6 = (TextInputLayout)  findViewById(R.id.textIL6);
+		 textIL7 = (TextInputLayout)  findViewById(R.id.textIL7);
+
 		 Button butreg = (Button) findViewById (R.id.register);
 
-		     
+		 usanem.addTextChangedListener(new MyTextWatcher(textIL1));
+		 usafon.addTextChangedListener(new MyTextWatcher(textIL2));
+		 usamail.addTextChangedListener(new MyTextWatcher(textIL3));
+		 usaorg.addTextChangedListener(new MyTextWatcher(textIL4));
+		 usarole.addTextChangedListener(new MyTextWatcher(textIL5));
+		 usapaso.addTextChangedListener(new MyTextWatcher(textIL6));
+		 usapasoc.addTextChangedListener(new MyTextWatcher(textIL7));
+
+
+
 		 cntryy = guc(this);
 		 try{
 		 if (cntryy.equals("ad")){uucnt.setText("Andorra");}
@@ -342,57 +367,46 @@ public class Regista extends AppCompatActivity implements AsyncTaskCompleteListe
 			butreg.setOnClickListener(new OnClickListener(){
 		    	
 		    	public void onClick(View view){
-	
-		    		cntry  = uucnt.getText().toString().trim();
-		            ssusanem= usanem.getText().toString().replaceAll("[^a-zA-Z' ]+", "");
-		            ssusanem.replace("'", "''");
-					ssusanem.trim();
-		    		ssusafon = usafon.getText().toString().trim().replace("'", "''");
-		    		ssusafon.replaceAll("[^0-9+]", "");
-					ssusafon.trim();
-		    		//regex to validate email ad
-		    		ssusapepe = usamail.getText().toString().trim();
-		    		ssusapepe.replace("'", "''");
-					ssusapepe.trim();
-
-					ssusaorg = usaorg.getText().toString().trim();
-					ssusaorg.replace("'", "''");
-					ssusaorg.trim();
-
-					ssusarole = usarole.getText().toString().trim();
-					ssusarole.replace("'", "''");
-					ssusarole.trim();
-
-					ssusapaso = usapaso.getText().toString().trim();
 
 
-		    		
-		    		
-		    		
-		            if(    usanem.getText().toString().trim().length()==0 ||
-		            		usafon.getText().toString().trim().length()==0||
-							usamail.getText().toString().trim().length()==0 ||
-		            		usarole.getText().toString().trim().length()==0||
-		            		usaorg.getText().toString().trim().length()==0||
-							usapaso.getText().toString().trim().length()==0
-		         		   )
-		               {
-		            	Toast.makeText(context,"Please fill all required fields first",Toast.LENGTH_LONG).show();
-		               } else if (usafon.getText().toString().trim().length()!=0 &&
-         		         		   usafon.getText().toString().trim().length() < 6||
-        		         		   usafon.getText().toString().trim().length() > 13){
-		            	   Toast.makeText(context,"Please enter a valid phone number",Toast.LENGTH_LONG).show();
-                       /*} else if ( usamail.getText().toString().trim().length()==0 && usafon.getText().toString().trim().length()==0){
-                    	   Toast.makeText(context,"Please enter at least your phone number or email.",Toast.LENGTH_LONG).show();
-					}else if(orga.getSelectedItem().toString().trim().equals("SELECT")){
+					if (!validateName()) {
+						return;
+					}
 
-						Toast.makeText(context, "Please specify the organisation", Toast.LENGTH_LONG ).show();
-						*/
+					if (!validatePhone()) {
+						return;
+					}
+
+					if (!validateEmail()) {
+						return;
+					}
+
+					if (!validateOrg()) {
+						return;
+					}
+
+					if (!validatePst()) {
+						return;
+					}
+
+					if (!validatePass()) {
+						return;
+					}
+
+					if (!validatePass2()) {
+						return;
+					}
 
 
-					} else if (!usapaso.getText().toString().trim().equals(usapasoc.getText().toString().trim())){
-						Toast.makeText(context,"Please make sure the passwords match.",Toast.LENGTH_LONG).show();
-                       }else {
+						cntry  = uucnt.getText().toString().trim();
+						ssusanem= usanem.getText().toString().trim();
+						ssusafon = usafon.getText().toString().trim();
+						ssusafon.replaceAll("[^0-9+]", "");
+						ssusapepe = usamail.getText().toString().trim();
+						ssusaorg = usaorg.getText().toString().trim();
+						ssusarole = usarole.getText().toString().trim();
+						ssusapaso = usapaso.getText().toString().trim();
+
 
 
 						map.put(Constantori.KEY_USERACTIVE, Constantori.USERACTIVE);
@@ -410,22 +424,157 @@ public class Regista extends AppCompatActivity implements AsyncTaskCompleteListe
 						doDBstuff("Saving");
 
 						if (Constantori.isConnectedToInternet()){
-							new NetPost(context, "regista_PostJSON", Constantori.getJSON(map), "Registering.....", Constantori.TABLE_REGISTER, Constantori.KEY_USERACTIVE, Regista.this).execute(new String[]{Constantori.URL_GEN});
+							new NetPost(context, "regista_PostJSON", Constantori.getJSON(map), "Registering.....", Constantori.TABLE_REGISTER, Constantori.KEY_USERACTIVE, Regista_new.this).execute(new String[]{Constantori.URL_GEN});
 					       }else{
 							Toast.makeText(context,Constantori.ERROR_NO_INTERNET,Toast.LENGTH_LONG).show();
 							}
 
-						if (success.equals("yes")){
-							diambaid2(View);
-							success = "";
-						}
 
 
-		         	       }
 		    	}
 			    });
 			
 }
+
+
+	private class MyTextWatcher implements TextWatcher {
+
+		private View view;
+
+		private MyTextWatcher(View view) {
+			this.view = view;
+		}
+
+		public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+		}
+
+		public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+		}
+
+		public void afterTextChanged(Editable editable) {
+			switch (view.getId()) {
+				case R.id.textIL1:
+					validateName();
+					break;
+				case R.id.textIL2:
+					validatePhone();
+					break;
+				case R.id.textIL3:
+					validateEmail();
+					break;
+				case R.id.textIL4:
+					validateOrg();
+					break;
+				case R.id.textIL5:
+					validatePst();
+					break;
+				case R.id.textIL6:
+					validatePass();
+					break;
+				case R.id.textIL7:
+					validatePass2();
+					break;
+			}
+		}
+	}
+
+	private boolean validateName() {
+		if (usanem.getText().toString().trim().isEmpty()) {
+			textIL1.setError(getString(R.string.err_msg_name));
+			requestFocus(usanem);
+			return false;
+		} else {
+			textIL1.setErrorEnabled(false);
+		}
+
+		return true;
+	}
+
+	private boolean validateOrg() {
+		if (usaorg.getText().toString().trim().isEmpty()) {
+			textIL4.setError(getString(R.string.err_msg_org));
+			requestFocus(usaorg);
+			return false;
+		} else {
+			textIL4.setErrorEnabled(false);
+		}
+
+		return true;
+	}
+
+	private boolean validatePst() {
+		if (usarole.getText().toString().trim().isEmpty()) {
+			textIL5.setError(getString(R.string.err_msg_role));
+			requestFocus(usarole);
+			return false;
+		} else {
+			textIL5.setErrorEnabled(false);
+		}
+
+		return true;
+	}
+
+	private boolean validateEmail() {
+		String email = usamail.getText().toString().trim();
+
+		if (email.isEmpty() || !isValidEmail(email)) {
+			textIL3.setError(getString(R.string.err_msg_email));
+			requestFocus(usamail);
+			return false;
+		} else {
+			textIL3.setErrorEnabled(false);
+		}
+
+		return true;
+	}
+
+	private boolean validatePass() {
+		if (usapaso.getText().toString().trim().isEmpty()) {
+			textIL6.setError(getString(R.string.err_msg_password));
+			requestFocus(usapaso);
+			return false;
+		} else {
+			textIL6.setErrorEnabled(false);
+		}
+
+		return true;
+	}
+
+	private boolean validatePass2() {
+		if (!usapasoc.getText().toString().trim().equals(usapaso.getText().toString().trim())) {
+			textIL7.setError(getString(R.string.err_msg_password2));
+			requestFocus(usapasoc);
+			return false;
+		} else {
+			textIL7.setErrorEnabled(false);
+		}
+
+		return true;
+	}
+
+	private boolean validatePhone() {
+		if (
+				usafon.getText().toString().trim().length()!=0 && usafon.getText().toString().trim().length() < 10) {
+			textIL2.setError(getString(R.string.err_msg_phone));
+			requestFocus(usafon);
+			return false;
+		} else {
+			textIL2.setErrorEnabled(false);
+		}
+
+		return true;
+	}
+
+	private static boolean isValidEmail(String email) {
+		return !TextUtils.isEmpty(email) && android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
+	}
+
+	private void requestFocus(View view) {
+		if (view.requestFocus()) {
+			getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+		}
+	}
+
 	
 	
 
@@ -445,8 +594,15 @@ public class Regista extends AppCompatActivity implements AsyncTaskCompleteListe
 			@Override
 			public void onClick(View v){
 
-				Intent intent = new Intent(context, MainActivity.class);
-				startActivity(intent);
+				if (reggo.equals("main")) {
+
+					Intent intent = new Intent(context, MainActivity.class);
+					startActivity(intent);
+				}else{
+					Intent intent = new Intent(context, Loginno.class);
+					startActivity(intent);
+				}
+
 					mbott.dismiss();
 			}
 		});
@@ -590,10 +746,10 @@ public class Regista extends AppCompatActivity implements AsyncTaskCompleteListe
 						JSONArray storesArray = new JSONArray(result);
 						JSONObject storeObject = storesArray.getJSONObject(0);
 						String pass = storeObject.getString(Constantori.POST_RESPONSEKEY);
+
 						if (pass.equals(Constantori.POST_RESPONSEVAL)) {
 							diambaid2(View);
 						}
-
 
 					}catch (Exception xx){
 						Log.e(Constantori.APP_ERROR_PREFIX + "_RegistaJSON", xx.getMessage());

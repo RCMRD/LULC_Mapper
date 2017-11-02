@@ -20,6 +20,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
@@ -45,9 +46,10 @@ import android.widget.Toast;
 
 @SuppressLint("NewApi") public class Mapper extends ActionBarActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, OnMapReadyCallback {
 
-    static double longitude;
-    static double latitude;
+    static double longitude = 0.0;
+    static double latitude = 0.0;
     Button backo;
+    Context context = this;
     ProgressDialog mpd3;
     View View;
     int kwanza = 1;
@@ -95,12 +97,6 @@ import android.widget.Toast;
         createlocreq();
 
         backo = (Button) findViewById(R.id.snapppe);
-        Bundle a = getIntent().getExtras();
-        Bundle b = getIntent().getExtras();
-        latitude = a.getDouble("lattt");
-        longitude = b.getDouble("lonnn");
-
-
 
         if (!isgpsa()){
             Toast.makeText(this, "Google Play Services is disable on your phone", Toast.LENGTH_LONG).show();
@@ -149,7 +145,7 @@ import android.widget.Toast;
             @Override
             public void onClick(View v) {
 
-                Intent intent = new Intent (Mapper.this, MainActivity.class);
+                Intent intent = new Intent (context, MainActivity.class);
                 startActivity(intent);
 
             }
@@ -217,8 +213,8 @@ import android.widget.Toast;
         // TODO Auto-generated method stub
 
         if ( Build.VERSION.SDK_INT >= 23 &&
-                ContextCompat.checkSelfPermission( Mapper.this, android.Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission( Mapper.this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ContextCompat.checkSelfPermission( context, android.Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission( context, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
             ActivityCompat.requestPermissions(Mapper.this,
                     new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
@@ -313,8 +309,8 @@ import android.widget.Toast;
 
 
         if ( Build.VERSION.SDK_INT >= 23 &&
-                ContextCompat.checkSelfPermission( Mapper.this, android.Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission( Mapper.this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ContextCompat.checkSelfPermission( context, android.Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission( context, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
             ActivityCompat.requestPermissions(Mapper.this,
                     new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
@@ -366,7 +362,7 @@ import android.widget.Toast;
 
 
         }else{
-            Toast.makeText(Mapper.this, "Accept to enable map view", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "Accept to enable map view", Toast.LENGTH_LONG).show();
             if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
                     == PackageManager.PERMISSION_GRANTED) {
 
@@ -399,7 +395,7 @@ import android.widget.Toast;
 
 
         if (id == R.id.itop1) {
-            Intent intent = new Intent (Mapper.this, Regista.class);
+            Intent intent = new Intent (context, Regista.class);
             intent.putExtra("lattt", String.valueOf(latitude));
             intent.putExtra("lonnn", String.valueOf(longitude));
             intent.putExtra("reggo","main");
@@ -408,7 +404,7 @@ import android.widget.Toast;
         }
 
         if (id == R.id.itop2) {
-            Intent intent = new Intent (Mapper.this, AboutUs.class);
+            Intent intent = new Intent (context, AboutUs.class);
             startActivity(intent);
             return true;
         }
@@ -422,7 +418,7 @@ import android.widget.Toast;
 
 
     public void diambaidno(View v) {
-        final Dialog mbott = new Dialog(Mapper.this, android.R.style.Theme_Translucent_NoTitleBar);
+        final Dialog mbott = new Dialog(context, android.R.style.Theme_Translucent_NoTitleBar);
         mbott.setContentView(R.layout.mbaind_nonet3);
         mbott.setCanceledOnTouchOutside(false);
         mbott.setCancelable(false);
@@ -482,7 +478,7 @@ import android.widget.Toast;
                     mgac.connect();
                 }
             } else if (resultCode == RESULT_CANCELED) {
-                Toast.makeText(Mapper.this, "Google Play Services must be installed.",
+                Toast.makeText(context, "Google Play Services must be installed.",
                         Toast.LENGTH_SHORT).show();
                 //finish();
             }
@@ -512,7 +508,7 @@ import android.widget.Toast;
 
 
             } else {
-                Toast.makeText(Mapper.this, "GPS Location services must be enabled.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "GPS Location services must be enabled.", Toast.LENGTH_SHORT).show();
             }
         }
     }

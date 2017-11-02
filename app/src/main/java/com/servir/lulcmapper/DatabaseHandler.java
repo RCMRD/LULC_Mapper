@@ -640,13 +640,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
                 JSONObject store = storesArray.getJSONObject(i);
 
-                String kref = store.getString(Constantori.KEY_RID);
+                String kref = store.getString(Constantori.KEY_DATNO);
 
                 ContentValues values = new ContentValues();
 
-                values.put(Constantori.KEY_DATSTATUS, store.getString(Constantori.KEY_DATSTATUS));
+                values.put(Constantori.KEY_DATSTATUS, Constantori.POST_DATSTATUS);
 
-                db.update(TableName, values, Constantori.KEY_RID+ "=?", new String[]{kref});
+                db.update(TableName, values, Constantori.KEY_DATNO+ "=?", new String[]{kref});
             }
 
             db.setTransactionSuccessful();

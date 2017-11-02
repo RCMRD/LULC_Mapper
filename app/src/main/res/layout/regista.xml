@@ -2,7 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:layout_margin="5dp"
+    android:layout_gravity="top"
+    android:orientation="vertical">
 
     
     
@@ -21,14 +23,13 @@
     <ScrollView
         android:layout_width="wrap_content"
         android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        android:layout_gravity="center_horizontal|top"
         android:layout_weight="1"
         >
     
     <RelativeLayout
-    android:layout_gravity="center"
     android:layout_width="match_parent"
-    android:layout_marginBottom="30dp"
-    android:layout_margin="10dp"
     android:layout_height="wrap_content"
     android:orientation="vertical"> 
 
@@ -37,7 +38,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_marginTop="10dp"
         android:text="@string/fulnem" />
 
     <EditText
@@ -202,7 +202,8 @@
 
        <RelativeLayout 
         android:layout_width="match_parent"
-        android:layout_margin="10dp"
+           android:layout_marginTop="5dp"
+           android:layout_gravity="bottom|center_horizontal"
         android:layout_height="wrap_content"
         >
 
@@ -224,6 +225,7 @@
         android:layout_height="40dp"
         android:layout_alignParentRight="true"
         android:background="@drawable/comlinee"
+        android:layout_margin="10dp"
         android:text="@string/regista"
         android:textColor="@android:color/background_light"
         android:textStyle="bold" />

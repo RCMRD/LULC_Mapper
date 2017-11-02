@@ -1,7 +1,6 @@
 package com.servir.lulcmapper;
 
 
-import android.*;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -9,9 +8,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -20,28 +16,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +38,8 @@ public class Loginno extends AppCompatActivity implements AsyncTaskCompleteListe
     Button logsigninA;
     View View;
     String mail="";
-    locTrak2 locii =  new locTrak2(Loginno.this);
+    public Context context = this;
+    locTrak2 locii =  new locTrak2(context);
     String pass="";
     DatabaseHandler db = DatabaseHandler.getInstance(this);
     String statt = "";
@@ -99,6 +82,7 @@ public class Loginno extends AppCompatActivity implements AsyncTaskCompleteListe
 
         //this.deleteDatabase(db.getDatabaseName());
         //db.resetAllTables();
+        //db.emptyTable(Constantori.TABLE_DAT);
 
         if (db.CheckIsDataAlreadyInDBorNot(Constantori.TABLE_REGISTER, Constantori.KEY_USERACTIVE, Constantori.USERACTIVE) && !db.CheckIsDataAlreadyInDBorNot(Constantori.TABLE_REGISTER, Constantori.KEY_USERREF, Constantori.USERREFNULL)) {
 
@@ -109,7 +93,13 @@ public class Loginno extends AppCompatActivity implements AsyncTaskCompleteListe
             pass = UserDetails.get(Constantori.KEY_USERPASS);
             nisa = UserDetails.get(Constantori.KEY_USERORG);
             refo = UserDetails.get(Constantori.KEY_USERREF);
+
+            logemailA.setText(mail);
+
         } else {
+            List<HashMap<String, String>> regData = db.GetAllData(Constantori.TABLE_REGISTER,"","");
+            HashMap<String, String> UserDetails = regData.get(0);
+            Log.e("nkaisery", Constantori.getJSON(UserDetails).toString());
             statt = Constantori.USERUNREG;
         }
 
@@ -156,10 +146,10 @@ public class Loginno extends AppCompatActivity implements AsyncTaskCompleteListe
                 } else {
 
                     if (
-                            ContextCompat.checkSelfPermission(Loginno.this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
-                                    ContextCompat.checkSelfPermission(Loginno.this, android.Manifest.permission.ACCESS_NETWORK_STATE) == PackageManager.PERMISSION_GRANTED &&
-                                    ContextCompat.checkSelfPermission(Loginno.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
-                                    ContextCompat.checkSelfPermission(Loginno.this, android.Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED
+                            ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                                    ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_NETWORK_STATE) == PackageManager.PERMISSION_GRANTED &&
+                                    ContextCompat.checkSelfPermission(context, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
+                                    ContextCompat.checkSelfPermission(context, android.Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED
 
                             ) {
 
@@ -191,10 +181,10 @@ public class Loginno extends AppCompatActivity implements AsyncTaskCompleteListe
         } else {
 
             if (
-                    ContextCompat.checkSelfPermission(Loginno.this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
-                            ContextCompat.checkSelfPermission(Loginno.this, android.Manifest.permission.ACCESS_NETWORK_STATE) == PackageManager.PERMISSION_GRANTED &&
-                            ContextCompat.checkSelfPermission(Loginno.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
-                            ContextCompat.checkSelfPermission(Loginno.this, android.Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED
+                    ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                            ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_NETWORK_STATE) == PackageManager.PERMISSION_GRANTED &&
+                            ContextCompat.checkSelfPermission(context, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
+                            ContextCompat.checkSelfPermission(context, android.Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED
 
                     ) {
 
@@ -220,9 +210,9 @@ public class Loginno extends AppCompatActivity implements AsyncTaskCompleteListe
 
 
 
-    public void diambaidnet(View v) {
+    public void diambaid_newuser(View v) {
         final Dialog ingia = new Dialog(this, android.R.style.Theme_Translucent_NoTitleBar);
-        ingia.setContentView(R.layout.mbaind_net);
+        ingia.setContentView(R.layout.mbaind_newuser);
         ingia.setCanceledOnTouchOutside(false);
         ingia.setCancelable(false);
         WindowManager.LayoutParams lp = ingia.getWindow().getAttributes();
@@ -245,9 +235,11 @@ public class Loginno extends AppCompatActivity implements AsyncTaskCompleteListe
                 map.put("pswd", pswd);
                 map.put("mail", myil);
 
-
-                new NetPost(Loginno.this,"login_CheckJSON",Constantori.getJSON(map),"Authenticating. Make sure internet connection is active", Constantori.TABLE_REGISTER, Constantori.KEY_USERACTIVE, new Loginno()).execute(new String[]{Constantori.URL_LOGIN});
-
+                if (Constantori.isConnectedToInternet()) {
+                    new NetPost(context, "login_CheckJSON", Constantori.getJSON(map), "Authenticating. Make sure internet connection is active", Constantori.TABLE_REGISTER, Constantori.KEY_USERACTIVE, Loginno.this).execute(new String[]{Constantori.URL_GEN});
+                }else{
+                    Toast.makeText(context,Constantori.ERROR_NO_INTERNET,Toast.LENGTH_LONG).show();
+                }
 
 
 
@@ -257,7 +249,7 @@ public class Loginno extends AppCompatActivity implements AsyncTaskCompleteListe
             @Override
             public void onClick(View v){
 
-                Toast.makeText(Loginno.this, "No active user account exists on the phone. Please Sign Up first ", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, "No active user account exists on the phone. Please Sign Up first ", Toast.LENGTH_LONG).show();
                 ingia.dismiss();
             }
         });
@@ -319,7 +311,7 @@ public class Loginno extends AppCompatActivity implements AsyncTaskCompleteListe
     }
 
     private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {
-        new AlertDialog.Builder(Loginno.this)
+        new AlertDialog.Builder(context)
                 .setMessage(message)
                 .setPositiveButton("OK", okListener)
                 .setNegativeButton("Cancel", null)
@@ -358,11 +350,11 @@ public class Loginno extends AppCompatActivity implements AsyncTaskCompleteListe
                     }
 
 
-                    Toast.makeText(Loginno.this, "Permissions enabled", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, "Permissions enabled", Toast.LENGTH_LONG).show();
 
                 } else {
                     // Permission Denied
-                    Toast.makeText(Loginno.this, "Some Permission is Denied", Toast.LENGTH_SHORT)
+                    Toast.makeText(context, "Some Permission is Denied", Toast.LENGTH_SHORT)
                             .show();
                 }
             }
@@ -378,27 +370,29 @@ public class Loginno extends AppCompatActivity implements AsyncTaskCompleteListe
 
         if (logemailA.getText().toString().equals("") || logpassA.getText().toString().equals("")) {
 
-            Toast.makeText(Loginno.this, "Please fill in the login detail", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "Please fill in the login detail", Toast.LENGTH_LONG).show();
 
         } else {
 
             pswd = logpassA.getText().toString().trim();
             myil = logemailA.getText().toString().trim();
 
-            if (statt.equals("unreg")){
-                diambaidnet(View);
+            if (statt.equals(Constantori.USERUNREG)){
+                diambaid_newuser(View);
             }else{
 
                 if (pswd.equals(pass) && myil.equals(mail)) {
-                    Intent intent = new Intent(Loginno.this, MainActivity.class);
+                    Intent intent = new Intent(context, MainActivity.class);
                     startActivity(intent);
-                } else{
-                    Toast.makeText(Loginno.this, "If registered, click on Yes.", Toast.LENGTH_LONG).show();
-                    diambaidnet(View);
+                } else if (!pswd.equals(pass) && myil.equals(mail)) {
+                    Toast.makeText(context, "Please insert the right password for the user account.", Toast.LENGTH_LONG).show();
+                }else{
+                    Toast.makeText(context, "New user? If registered, click on Yes.", Toast.LENGTH_LONG).show();
+                    diambaid_newuser(View);
 
                 }
 
-                logemailA.setText("");
+
                 logpassA.setText("");
             }
         }
@@ -408,7 +402,7 @@ public class Loginno extends AppCompatActivity implements AsyncTaskCompleteListe
     private void anareg(){
         finish();
 
-        Intent intent = new Intent(Loginno.this, Regista.class);
+        Intent intent = new Intent(context, Regista_new.class);
         intent.putExtra("reggo","login");
         intent.putExtra("lattt", say);
         intent.putExtra("lonnn", sax);
@@ -422,29 +416,29 @@ public class Loginno extends AppCompatActivity implements AsyncTaskCompleteListe
         switch (sender){
             case "login_CheckJSON":
 
-                if (result.equals("not_approved")) {
-                    Toast.makeText(Loginno.this, "You have not been approved yet by the administrator.", Toast.LENGTH_LONG).show();
-                    logemailA.setText("");
-                    logpassA.setText("");
-
+                if (result.equals("202")) {
+                    Toast.makeText(context, Constantori.ERROR_APPROVAL, Toast.LENGTH_LONG).show();
+                }else if(result.equals("101")) {
+                    Toast.makeText(context, Constantori.ERROR_PASSWORD, Toast.LENGTH_LONG).show();
                 }else if(result.equals(null)) {
-                    Toast.makeText(Loginno.this, "Server updating, please wait and try again", Toast.LENGTH_LONG).show();
-
-                }else if(result.equals("not_registered")) {
-                    Toast.makeText(Loginno.this, "Incorrect login detail. Please try again.", Toast.LENGTH_LONG).show();
-
-                }else if(result.equals("Issue")) {
-                    Constantori.diambaidno(View);
+                    Toast.makeText(context, Constantori.ERROR_SERVER_ISSUE, Toast.LENGTH_LONG).show();
+                 }else if(result.equals("Issue")) {
+                    Constantori.diambaidno(View, context);
 
                 }else{
 
                     try {
                         JSONArray storesArray = new JSONArray(result);
                         storesArray.getJSONObject(0).put(Constantori.KEY_USERPASS, pswd);
+                        storesArray.getJSONObject(0).put(Constantori.KEY_USERACTIVE, Constantori.USERACTIVE);
 
-                        db.UserApproved(storesArray);
+                        if (db.CheckIsDataAlreadyInDBorNot(Constantori.TABLE_REGISTER, Constantori.KEY_USERACTIVE, Constantori.USERACTIVE)) {
+                            db.RegisterUser_Update(storesArray);
+                        }else {
+                            db.RegisterUser_Insert(storesArray);
+                        }
 
-                        Intent intent = new Intent(Loginno.this, MainActivity.class);
+                        Intent intent = new Intent(context, MainActivity.class);
                         startActivity(intent);
 
 

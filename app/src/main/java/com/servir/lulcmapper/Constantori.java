@@ -3,6 +3,8 @@ package com.servir.lulcmapper;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -71,14 +73,15 @@ public class Constantori {
 
     //////////////////////////////////////////////////////////////////////////////
 
-    public static final String URL_LOGIN = "http://mobiledata.rcmrd.org/lulc/checka.php";
-    public static final String URL_REGISTER = "http://mobiledata.rcmrd.org/lulc/lulc_gen.php";
-    public static final String URL_MAINPOST = "http://mobiledata.rcmrd.org/lulc/senda.php";
-    public static final String URL_PIC = "http://mobiledata.rcmrd.org/lulc/sendapic.php";
+    public static final String URL_GEN = "http://mobiledata.rcmrd.org/lulc/lulc_gen.php";
+
 
     /////////////////////////////////////////////////////////////////////////////
     public static final String ERROR_USER_EXISTS = "You are already registered.";
     public static final String ERROR_SERVER_ISSUE = "Server updating, please wait and try again";
+    public static final String ERROR_NO_INTERNET = "No internet connection, please connect and try again.";
+    public static final String ERROR_APPROVAL = "You have not been approved yet by the administrator.";
+    public static final String ERROR_PASSWORD = "Please use correct password";
 
 
 
@@ -92,15 +95,15 @@ public class Constantori {
         JSONArray allData_multi = new JSONArray();
         JSONObject allData_single = new JSONObject(x);
         allData_multi.put(allData_single);
-        Log.e(APP_ERROR_PREFIX + "_LogSendJSON", allData_multi.toString());
+        Log.e(APP_ERROR_PREFIX + "_SendJSON", allData_multi.toString());
 
         return allData_multi;
     }
 
 
 
-    public static void diambaidno(View v) {
-        final Dialog mbott = new Dialog(ApplicationContextor.getAppContext(), android.R.style.Theme_Translucent_NoTitleBar);
+    public static void diambaidno(View v, Context context) {
+        final Dialog mbott = new Dialog(context, android.R.style.Theme_Translucent_NoTitleBar);
         mbott.setContentView(R.layout.mbaind_nonet3);
         mbott.setCanceledOnTouchOutside(false);
         mbott.setCancelable(false);
@@ -118,6 +121,45 @@ public class Constantori {
             }
         });
         mbott.show();
+    }
+
+    public static void diambaidsent(View v, Context context) {
+        final Dialog mbott = new Dialog(context, android.R.style.Theme_Translucent_NoTitleBar);
+        mbott.setContentView(R.layout.mbaind_sent);
+        mbott.setCanceledOnTouchOutside(false);
+        mbott.setCancelable(false);
+        WindowManager.LayoutParams lp = mbott.getWindow().getAttributes();
+        lp.dimAmount=0.85f;
+        mbott.getWindow().setAttributes(lp);
+        mbott.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        mbott.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
+        Button mbaok = (Button) mbott.findViewById(R.id.mbabtn1);
+        mbaok.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+
+                mbott.dismiss();
+            }
+        });
+        mbott.show();
+    }
+
+
+    public static boolean isConnectedToInternet(){
+        ConnectivityManager connectivity = (ConnectivityManager)ApplicationContextor.getAppContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivity != null)
+        {
+            NetworkInfo[] info = connectivity.getAllNetworkInfo();
+            if (info != null)
+                for (int i = 0; i < info.length; i++)
+                    if (info[i].getState() == NetworkInfo.State.CONNECTED)
+                    {
+                        return true;
+                    }
+
+        }
+        return false;
     }
 
 

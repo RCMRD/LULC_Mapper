@@ -29,7 +29,7 @@ import com.google.android.gms.location.LocationServices;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     DatabaseHandler db = DatabaseHandler.getInstance(this);
     LinearLayout btnview, btnniko;
     public static final int confail = 9000;
-
+    public Context context = this;
     String zipfilo;
     LocationRequest mlr;
     GoogleApiClient mgac;
@@ -82,13 +82,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     List<String> storapic  = new ArrayList<String>();
     TextView title, sitato;
     String lefile;
-    ProgressDialog mpd;
     String say = "0.0";
     String sax = "0.0";
-    String dater,pswda,ioyote;
-    String simu="";
     String refo="";
-    String mail="";
     ImageView taftaa;
     private final static int REQUEST_CODE_RECOVER_PLAY_SERVICES = 200;
     private final static int REQUEST_LOCATION = 2;
@@ -144,8 +140,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             List<HashMap<String, String>> regData = db.GetAllData(Constantori.TABLE_REGISTER,"","");
             HashMap<String, String> UserDetails = regData.get(0);
 
-            mail = UserDetails.get(Constantori.KEY_USEREMAIL);
-            simu = UserDetails.get(Constantori.KEY_USERTEL);
             refo = UserDetails.get(Constantori.KEY_USERREF);
         } else {
             diambaidweni(View);
@@ -156,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
             @Override
             public View makeView() {
-                TextView textView = new TextView(MainActivity.this);
+                TextView textView = new TextView(context);
                 textView.setTextSize(16);
                 textView.setTextColor(Color.rgb(0,0,0));
                 //textView.setGravity(Gravity.CENTER_HORIZONTAL);
@@ -202,7 +196,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                         updateUI();
 
-                        //Toast.makeText(MainActivity.this,"tLat :"+  latitude + "\n" + "tLon : "+longitude ,Toast.LENGTH_LONG).show();
+                        //Toast.makeText(context,"tLat :"+  latitude + "\n" + "tLon : "+longitude ,Toast.LENGTH_LONG).show();
 
 
                         if(curIndex == TextToSwitched.length-1){
@@ -221,7 +215,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                         }
 
-                        // Toast.makeText(MainActivity.this,"LAT:"+String.valueOf(latitude)+"\n"+"LON:"+String.valueOf(longitude),Toast.LENGTH_SHORT).show();
+                        // Toast.makeText(context,"LAT:"+String.valueOf(latitude)+"\n"+"LON:"+String.valueOf(longitude),Toast.LENGTH_SHORT).show();
 
                     }
 
@@ -243,20 +237,20 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
             public void onClick(View view){
 
-                // diaingia(View);
+
 
                 if (sax.equals("0.0") || say.equals("0.0")){
                     updateUI();
-                    Toast.makeText(MainActivity.this,"Please turn on GPS then try again",Toast.LENGTH_LONG).show();
+                    Toast.makeText(context,"Please turn on GPS then try again",Toast.LENGTH_LONG).show();
                 }else{
 
                     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", java.util.Locale.getDefault());
-                    dater = "LULC_" + refo.replace(" ", "_") + "_" + simu + "_" + dateFormat.format(new Date());
+                    String datno = refo + "_" + dateFormat.format(new Date());
 
-                    Intent intent = new Intent (MainActivity.this, Selekta.class);
+                    Intent intent = new Intent (context, Selekta.class);
                     intent.putExtra("lattt", String.valueOf(latitude));
                     intent.putExtra("lonnn", String.valueOf(longitude));
-                    intent.putExtra("datno", dater);
+                    intent.putExtra("datno", datno);
                     startActivity(intent);
 
                 }
@@ -270,22 +264,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                 if (latitude!=0.0 && longitude!=0.0 ){
 
-                    Intent intent = new Intent (MainActivity.this, Mapper.class);
-                    Bundle b = new Bundle();
-                    Bundle a = new Bundle();
-                    a.putDouble("lattt", latitude);
-                    b.putDouble("lonnn", longitude);
-
-                   /* intent.putExtras(a);
-                    intent.putExtras(b);
-                    intent.putExtra("simu", simu);
-                    intent.putExtra("nani", nani);
-                    startActivity(intent);*/
+                    Intent intent = new Intent (context, Mapper.class);
+                    startActivity(intent);
 
                 }else{
 
                     updateUI();
-                    Toast.makeText(MainActivity.this,"Please turn on GPS then try again",Toast.LENGTH_LONG).show();
+                    Toast.makeText(context,"Please turn on GPS then try again",Toast.LENGTH_LONG).show();
 
                 }
 
@@ -308,7 +293,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                         JSONArray sendo = db.PostDataArray_Alldata(Constantori.TABLE_DAT, Constantori.KEY_DATSTATUS, Constantori.SAVE_DATSTATUS);
 
-                        new NetPost(MainActivity.this, "maindata_PostJSON", sendo, "Sending... Make sure internet connection is active", Constantori.TABLE_DAT, Constantori.KEY_DATSTATUS, new MainActivity()).execute(new String[]{Constantori.URL_MAINPOST});
+                        if (Constantori.isConnectedToInternet()) {
+                            new NetPost(context, "maindata_PostJSON", sendo, "Sending... Make sure internet connection is active", Constantori.TABLE_DAT, Constantori.KEY_DATSTATUS, MainActivity.this).execute(new String[]{Constantori.URL_GEN});
+                        }else{
+                            Toast.makeText(context,Constantori.ERROR_NO_INTERNET,Toast.LENGTH_LONG).show();
+                        }
+
                     }else{
                         hexa++;
                     }
@@ -317,7 +307,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     if(db.getRowCount(Constantori.TABLE_PIC, "","") > 0){
 
                         SimpleDateFormat dateFormat = new SimpleDateFormat("HHmmss", java.util.Locale.getDefault());
-                        zipfilo = "LC_"  +  simu + "_" + dateFormat.format(new Date()) + ".zip";
+                        zipfilo = "LC_"  +  refo + "_" + dateFormat.format(new Date()) + ".zip";
                         lapica();
 
                         try {
@@ -330,7 +320,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                             picArray.put(allImages);
 
-                            new NetPost(MainActivity.this, "maindata_PostImages", picArray, "Sending Images... Make sure internet connection is active",Constantori.TABLE_PIC,null, new MainActivity()).execute(new String[]{Constantori.URL_PIC});
+                            if (Constantori.isConnectedToInternet()) {
+                                new NetPost(context, "maindata_PostImages", picArray, "Sending Images... Make sure internet connection is active", Constantori.TABLE_PIC, "", MainActivity.this).execute(new String[]{Constantori.URL_GEN});
+                            }else{
+                                Toast.makeText(context,Constantori.ERROR_NO_INTERNET,Toast.LENGTH_LONG).show();
+                            }
 
                         }catch (Exception xx){
 
@@ -342,7 +336,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                         hexa++;
                     }
 
-                    if (hexa == 0){
+                    if (hexa > 0){
                         Toast.makeText(getBaseContext(), "No pending data in internal database", Toast.LENGTH_LONG).show();
                     }
 
@@ -413,8 +407,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         // TODO Auto-generated method stub
 
         if ( Build.VERSION.SDK_INT >= 23 &&
-                ContextCompat.checkSelfPermission( MainActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission( MainActivity.this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ContextCompat.checkSelfPermission( context, android.Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission( context, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
             ActivityCompat.requestPermissions(MainActivity.this,
                     new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
@@ -456,7 +450,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             }
 
         }else{
-            diambaidno(View);
+            Constantori.diambaidno(View, context);
         }
     }
 
@@ -506,7 +500,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
 
     public void diambaidweni(View v) {
-        final Dialog mbott = new Dialog(MainActivity.this, android.R.style.Theme_Translucent_NoTitleBar);
+        final Dialog mbott = new Dialog(context, android.R.style.Theme_Translucent_NoTitleBar);
         mbott.setContentView(R.layout.mbaind_nowe);
         mbott.setCanceledOnTouchOutside(false);
         mbott.setCancelable(false);
@@ -521,7 +515,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             @Override
             public void onClick(View v){
 
-                Intent intent = new Intent (MainActivity.this, Regista.class);
+                Intent intent = new Intent (context, Regista_new.class);
                 intent.putExtra("lattt", String.valueOf(latitude));
                 intent.putExtra("lonnn", String.valueOf(longitude));
                 intent.putExtra("reggo","main");
@@ -551,7 +545,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
 
         if (id == R.id.itop1) {
-            Intent intent = new Intent (MainActivity.this, Regista.class);
+            Intent intent = new Intent (context, Regista_new.class);
             intent.putExtra("lattt", String.valueOf(latitude));
             intent.putExtra("lonnn", String.valueOf(longitude));
             intent.putExtra("reggo","main");
@@ -560,7 +554,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
 
         if (id == R.id.itop2) {
-            Intent intent = new Intent (MainActivity.this, AboutUs.class);
+            Intent intent = new Intent (context, AboutUs.class);
             startActivity(intent);
             return true;
         }
@@ -572,52 +566,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
 
-    public void diambaidno(View v) {
-        final Dialog mbott = new Dialog(MainActivity.this, android.R.style.Theme_Translucent_NoTitleBar);
-        mbott.setContentView(R.layout.mbaind_nonet3);
-        mbott.setCanceledOnTouchOutside(false);
-        mbott.setCancelable(false);
-        WindowManager.LayoutParams lp = mbott.getWindow().getAttributes();
-        lp.dimAmount=0.85f;
-        mbott.getWindow().setAttributes(lp);
-        mbott.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-        mbott.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
-        Button mbaok = (Button) mbott.findViewById(R.id.mbabtn1);
-        mbaok.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                mbott.dismiss();
-            }
-        });
-        mbott.show();
-    }
-
-
-
-
-
-    public void diambaids(View v) {
-        final Dialog mbott = new Dialog(MainActivity.this, android.R.style.Theme_Translucent_NoTitleBar);
-        mbott.setContentView(R.layout.mbaind_sent);
-        mbott.setCanceledOnTouchOutside(false);
-        mbott.setCancelable(false);
-        WindowManager.LayoutParams lp = mbott.getWindow().getAttributes();
-        lp.dimAmount=0.85f;
-        mbott.getWindow().setAttributes(lp);
-        mbott.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-        mbott.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-
-        Button mbaok = (Button) mbott.findViewById(R.id.mbabtn1);
-        mbaok.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-
-                mbott.dismiss();
-            }
-        });
-        mbott.show();
-    }
 
     public void onResume(){
         super.onResume();
@@ -659,7 +608,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     mgac.connect();
                 }
             } else if (resultCode == RESULT_CANCELED) {
-                Toast.makeText(MainActivity.this, "Google Play Services must be installed.",
+                Toast.makeText(context, "Google Play Services must be installed.",
                         Toast.LENGTH_SHORT).show();
                 //finish();
             }
@@ -686,7 +635,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
 
             } else {
-                Toast.makeText(MainActivity.this, "GPS Location services must be enabled.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "GPS Location services must be enabled.", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -782,7 +731,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         } catch(Exception e) {
             Log.e(" error ---- ", "exception", e);
-            Toast.makeText(MainActivity.this,"Image(s) not found at this time." ,Toast.LENGTH_LONG).show();
+            Toast.makeText(context,"Image(s) not found at this time." ,Toast.LENGTH_LONG).show();
 
 
         }
@@ -828,16 +777,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             case "maindata_PostJSON":
 
                 if(result.equals(null)) {
-                    Toast.makeText(MainActivity.this, "Server updating, please wait and try again", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, Constantori.ERROR_SERVER_ISSUE, Toast.LENGTH_LONG).show();
                 }else if(result.equals("Issue")) {
-                    Constantori.diambaidno(View);
-
+                    Constantori.diambaidno(View, context);
                 }else{
 
                     try {
                         JSONArray storesArray = new JSONArray(result);
 
                         db.DataPost_Status(storesArray, Constantori.TABLE_DAT);
+
+                        Constantori.diambaidsent(View, context);
 
                     }catch (Exception xx){
                         Log.e(Constantori.APP_ERROR_PREFIX + "_LoginnoJSON", xx.getMessage());
@@ -848,14 +798,18 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                 break;
 
-            case "maindata_PostImage":
+            case "maindata_PostImages":
+
+
 
                 if(result.equals(null)) {
-                    Toast.makeText(MainActivity.this, "Server updating, please wait and try again", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, "Server updating, please wait and try again", Toast.LENGTH_LONG).show();
                 }else if(result.equals("Issue")) {
-                    Constantori.diambaidno(View);
+                    Constantori.diambaidno(View, context);
 
                 }else if (result.contains("inflating")){
+
+                    Log.e("matiangi","hajakam");
 
                     db.emptyTable(Constantori.TABLE_PIC);
 

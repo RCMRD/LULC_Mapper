@@ -30,7 +30,7 @@ package="com.servir.lulcmapper">
     android:hardwareAccelerated="false"
     android:label="@string/app_name"
     android:name=".ApplicationContextor"
-    android:roundIcon="@mipmap/lulc_launcher_round"
+    android:roundIcon="@mipmap/lulc_launcher"
     android:screenOrientation="portrait"
     android:supportsRtl="true">
     <activity
@@ -47,7 +47,7 @@ package="com.servir.lulcmapper">
     </activity>
 
     <activity
-        android:name="com.servir.lulcmapper.Regista"
+        android:name="com.servir.lulcmapper.Regista_new"
         android:label="@string/app_name"
         android:screenOrientation="portrait"
         android:theme="@style/AppTheme"
