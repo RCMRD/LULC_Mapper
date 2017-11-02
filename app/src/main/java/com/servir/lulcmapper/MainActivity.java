@@ -19,15 +19,17 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.servir.lulcmapper.Utils.AsyncTaskCompleteListener;
+import com.servir.lulcmapper.Utils.Constantori;
+import com.servir.lulcmapper.Utils.DatabaseHandler;
+import com.servir.lulcmapper.Utils.NetPost;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;

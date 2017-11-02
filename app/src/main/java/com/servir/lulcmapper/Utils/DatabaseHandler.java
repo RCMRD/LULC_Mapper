@@ -1,4 +1,4 @@
-package com.servir.lulcmapper;
+package com.servir.lulcmapper.Utils;
 
 import android.content.ContentValues;
 import android.content.Context;

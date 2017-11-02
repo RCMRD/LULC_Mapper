@@ -10,7 +10,6 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -25,6 +24,12 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
+import com.servir.lulcmapper.Utils.ApplicationContextor;
+import com.servir.lulcmapper.Utils.AsyncTaskCompleteListener;
+import com.servir.lulcmapper.Utils.Constantori;
+import com.servir.lulcmapper.Utils.DatabaseHandler;
+import com.servir.lulcmapper.Utils.Locatori;
+import com.servir.lulcmapper.Utils.NetPost;
 
 import org.json.JSONArray;
 

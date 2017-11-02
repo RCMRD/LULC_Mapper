@@ -1,4 +1,4 @@
-package com.servir.lulcmapper;
+package com.servir.lulcmapper.Utils;
 
 
 import android.app.Activity;
@@ -13,12 +13,11 @@ import android.widget.Button;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.servir.lulcmapper.R;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 public class Constantori {

@@ -21,16 +21,20 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.servir.lulcmapper.Utils.AsyncTaskCompleteListener;
+import com.servir.lulcmapper.Utils.Constantori;
+import com.servir.lulcmapper.Utils.DatabaseHandler;
+import com.servir.lulcmapper.Utils.NetPost;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class Regista_new extends AppCompatActivity implements AsyncTaskCompleteListener{
+public class Regista_new extends AppCompatActivity implements AsyncTaskCompleteListener {
 
 
 	EditText usamail,usapaso,usapasoc,usaorg,usarole, usanem, usafon;

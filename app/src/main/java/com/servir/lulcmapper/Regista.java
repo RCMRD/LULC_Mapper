@@ -24,7 +24,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class Regista extends AppCompatActivity implements AsyncTaskCompleteListener{
+import com.servir.lulcmapper.Utils.AsyncTaskCompleteListener;
+import com.servir.lulcmapper.Utils.Constantori;
+import com.servir.lulcmapper.Utils.DatabaseHandler;
+import com.servir.lulcmapper.Utils.NetPost;
+
+public class Regista extends AppCompatActivity implements AsyncTaskCompleteListener {
 
 	EditText usanem;
 	EditText usafon;
