@@ -175,7 +175,7 @@ public class Loginno extends AppCompatActivity implements AsyncTaskCompleteListe
 
 
 
-                        //Log.e("wapi", String.format("LAT : %s \n LON : %s", say, sax));
+                        Log.e("wapi", String.format("LAT : %s \n LON : %s", say, sax));
 
 
                     }

@@ -54,7 +54,7 @@ public class Regista_new extends AppCompatActivity implements AsyncTaskCompleteL
 	private String ssusaorg;
 	private String ssusarole;
 	private String ssusaref;
-	private String success = "";
+	
 
 
 	TextView uucnt;

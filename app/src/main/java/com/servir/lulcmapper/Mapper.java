@@ -49,7 +49,7 @@ import android.widget.Toast;
     Context context = this;
     ProgressDialog mpd3;
     View View;
-    int kwanza = 1;
+    
 
     public static final int confail = 9000;
     LocationRequest mlr;
@@ -71,6 +71,7 @@ import android.widget.Toast;
     }
 
     LatLng niko = new LatLng(-1.2920659,36.82194619999996);
+	int kwanza = 1;
 
 /*
 	    PolylineOptions pline = new PolylineOptions();
